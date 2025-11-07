@@ -28,7 +28,7 @@ const PositionsList = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this position?')) {
+    if (!window.confirm(t('confirmDelete'))) {
       return;
     }
 

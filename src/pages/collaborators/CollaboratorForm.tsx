@@ -157,7 +157,7 @@ const CollaboratorForm = () => {
             onChange={handleChange}
             required
           >
-            <option value="">Select a position</option>
+            <option value="">{t('selectPosition')}</option>
             {positions.map((position) => (
               <option key={position.id} value={position.id}>
                 {position.name}
@@ -175,7 +175,7 @@ const CollaboratorForm = () => {
             onChange={handleChange}
             required
           >
-            <option value="">Select a team</option>
+            <option value="">{t('selectTeam')}</option>
             {teams.map((team) => (
               <option key={team.id} value={team.id}>
                 {team.name}

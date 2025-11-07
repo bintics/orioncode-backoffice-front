@@ -28,7 +28,7 @@ const TeamsList = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this team?')) {
+    if (!window.confirm(t('confirmDelete'))) {
       return;
     }
 

@@ -20,6 +20,10 @@ const resources = {
       back: 'Back',
       loading: 'Loading...',
       error: 'Error',
+      confirmDelete: 'Are you sure you want to delete this item?',
+      selectOption: 'Select an option',
+      selectPosition: 'Select a position',
+      selectTeam: 'Select a team',
       
       // Positions
       positionName: 'Position Name',
@@ -65,6 +69,10 @@ const resources = {
       back: 'Volver',
       loading: 'Cargando...',
       error: 'Error',
+      confirmDelete: '¿Está seguro de que desea eliminar este elemento?',
+      selectOption: 'Seleccione una opción',
+      selectPosition: 'Seleccione un puesto',
+      selectTeam: 'Seleccione un equipo',
       
       // Positions
       positionName: 'Nombre del Puesto',

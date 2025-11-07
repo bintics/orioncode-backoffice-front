@@ -38,7 +38,7 @@ const CollaboratorsList = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this collaborator?')) {
+    if (!window.confirm(t('confirmDelete'))) {
       return;
     }
 
