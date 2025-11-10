@@ -19,6 +19,12 @@ const PositionForm = () => {
   useEffect(() => {
     if (id) {
       loadPosition(id);
+    } else {
+      // Generate UUID for new position
+      setFormData((prev) => ({
+        ...prev,
+        id: crypto.randomUUID(),
+      }));
     }
   }, [id]);
 

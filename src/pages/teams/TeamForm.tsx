@@ -97,19 +97,6 @@ const TeamForm = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="id">{t('teamId')}</label>
-          <input
-            type="text"
-            id="id"
-            name="id"
-            value={formData.id}
-            onChange={handleChange}
-            required
-            disabled
-          />
-        </div>
-
-        <div className="form-group">
           <label htmlFor="name">{t('teamName')}</label>
           <input
             type="text"
