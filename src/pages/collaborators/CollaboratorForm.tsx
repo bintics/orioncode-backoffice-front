@@ -30,6 +30,12 @@ const CollaboratorForm = () => {
     loadReferences();
     if (id) {
       loadCollaborator(id);
+    } else {
+      // Generate UUID for new collaborator
+      setFormData((prev) => ({
+        ...prev,
+        id: crypto.randomUUID(),
+      }));
     }
   }, [id]);
 
@@ -111,19 +117,6 @@ const CollaboratorForm = () => {
       {error && <div className="error">{t('error')}: {error}</div>}
 
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="id">{t('collaboratorId')}</label>
-          <input
-            type="text"
-            id="id"
-            name="id"
-            value={formData.id}
-            onChange={handleChange}
-            required
-            disabled={isEditing}
-          />
-        </div>
-
         <div className="form-group">
           <label htmlFor="firstName">{t('firstName')}</label>
           <input
