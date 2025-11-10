@@ -68,7 +68,7 @@ const TeamsList = () => {
               <td>{team.name}</td>
               <td>
                 <div className="tags">
-                  {team.tags.map((tag, index) => (
+                  {team?.tags?.map((tag, index) => (
                     <span key={index} className="tag">
                       {tag}
                     </span>
