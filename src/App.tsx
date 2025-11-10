@@ -11,25 +11,29 @@ import './i18n';
 function App() {
   return (
     <Router>
-      <Navigation />
-      <Routes>
-        <Route path="/" element={<Navigate to="/positions" replace />} />
-        
-        {/* Positions Routes */}
-        <Route path="/positions" element={<PositionsList />} />
-        <Route path="/positions/new" element={<PositionForm />} />
-        <Route path="/positions/edit/:id" element={<PositionForm />} />
-        
-        {/* Collaborators Routes */}
-        <Route path="/collaborators" element={<CollaboratorsList />} />
-        <Route path="/collaborators/new" element={<CollaboratorForm />} />
-        <Route path="/collaborators/edit/:id" element={<CollaboratorForm />} />
-        
-        {/* Teams Routes */}
-        <Route path="/teams" element={<TeamsList />} />
-        <Route path="/teams/new" element={<TeamForm />} />
-        <Route path="/teams/edit/:id" element={<TeamForm />} />
-      </Routes>
+      <div className="app-container">
+        <Navigation />
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<Navigate to="/positions" replace />} />
+            
+            {/* Positions Routes */}
+            <Route path="/positions" element={<PositionsList />} />
+            <Route path="/positions/new" element={<PositionForm />} />
+            <Route path="/positions/edit/:id" element={<PositionForm />} />
+            
+            {/* Collaborators Routes */}
+            <Route path="/collaborators" element={<CollaboratorsList />} />
+            <Route path="/collaborators/new" element={<CollaboratorForm />} />
+            <Route path="/collaborators/edit/:id" element={<CollaboratorForm />} />
+            
+            {/* Teams Routes */}
+            <Route path="/teams" element={<TeamsList />} />
+            <Route path="/teams/new" element={<TeamForm />} />
+            <Route path="/teams/edit/:id" element={<TeamForm />} />
+          </Routes>
+        </main>
+      </div>
     </Router>
   );
 }

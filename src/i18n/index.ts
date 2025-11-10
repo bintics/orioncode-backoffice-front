@@ -8,6 +8,7 @@ const resources = {
       positions: 'Positions',
       collaborators: 'Collaborators',
       teams: 'Teams',
+      configuration: 'Configuration',
       
       // Common
       name: 'Name',
@@ -57,6 +58,7 @@ const resources = {
       positions: 'Puestos',
       collaborators: 'Colaboradores',
       teams: 'Equipos',
+      configuration: 'Configuración',
       
       // Common
       name: 'Nombre',
