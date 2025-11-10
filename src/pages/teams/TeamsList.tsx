@@ -44,54 +44,60 @@ const TeamsList = () => {
   if (error) return <div className="error">{t('error')}: {error}</div>;
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h1>{t('teamsList')}</h1>
-        <Link to="/teams/new">
-          <button className="btn-primary">{t('createTeam')}</button>
+        <h1 className="page-title">{t('teamsList')}</h1>
+        <Link to="/teams/new" className="btn-primary">
+          + {t('createTeam')}
         </Link>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>{t('teamId')}</th>
-            <th>{t('name')}</th>
-            <th>{t('tags')}</th>
-            <th>{t('actions')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {teams.map((team) => (
-            <tr key={team.id}>
-              <td>{team.id}</td>
-              <td>{team.name}</td>
-              <td>
-                <div className="tags">
-                  {team?.tags?.map((tag, index) => (
-                    <span key={index} className="tag">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </td>
-              <td>
-                <div className="btn-group">
-                  <Link to={`/teams/edit/${team.id}`}>
-                    <button className="btn-secondary btn-small">{t('edit')}</button>
-                  </Link>
-                  <button
-                    className="btn-danger btn-small"
-                    onClick={() => handleDelete(team.id)}
-                  >
-                    {t('delete')}
-                  </button>
-                </div>
-              </td>
+      <div className="table-container">
+        <table className="data-table teams">
+          <thead>
+            <tr>
+              <th>{t('teamId')}</th>
+              <th>{t('name')}</th>
+              <th>{t('tags')}</th>
+              <th>{t('actions')}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {teams.map((team) => (
+              <tr key={team.id}>
+                <td>
+                  <span className="id-cell" title={team.id}>
+                    {team.id}
+                  </span>
+                </td>
+                <td>{team.name}</td>
+                <td>
+                  <div className="tags">
+                    {team?.tags?.map((tag, index) => (
+                      <span key={index} className="tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+                <td>
+                  <div className="btn-group">
+                    <Link to={`/teams/edit/${team.id}`} className="btn-secondary">
+                      {t('edit')}
+                    </Link>
+                    <button
+                      className="btn-danger"
+                      onClick={() => handleDelete(team.id)}
+                    >
+                      {t('delete')}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

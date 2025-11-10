@@ -62,60 +62,66 @@ const CollaboratorsList = () => {
   if (error) return <div className="error">{t('error')}: {error}</div>;
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h1>{t('collaboratorsList')}</h1>
-        <Link to="/collaborators/new">
-          <button className="btn-primary">{t('createCollaborator')}</button>
+        <h1 className="page-title">{t('collaboratorsList')}</h1>
+        <Link to="/collaborators/new" className="btn-primary">
+          + {t('createCollaborator')}
         </Link>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>{t('collaboratorId')}</th>
-            <th>{t('firstName')}</th>
-            <th>{t('lastName')}</th>
-            <th>{t('position')}</th>
-            <th>{t('team')}</th>
-            <th>{t('tags')}</th>
-            <th>{t('actions')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {collaborators.map((collaborator) => (
-            <tr key={collaborator.id}>
-              <td>{collaborator.id}</td>
-              <td>{collaborator.firstName}</td>
-              <td>{collaborator.lastName}</td>
-              <td>{getPositionName(collaborator.positionId)}</td>
-              <td>{getTeamName(collaborator.teamId)}</td>
-              <td>
-                <div className="tags">
-                  {collaborator.tags.map((tag, index) => (
-                    <span key={index} className="tag">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </td>
-              <td>
-                <div className="btn-group">
-                  <Link to={`/collaborators/edit/${collaborator.id}`}>
-                    <button className="btn-secondary btn-small">{t('edit')}</button>
-                  </Link>
-                  <button
-                    className="btn-danger btn-small"
-                    onClick={() => handleDelete(collaborator.id)}
-                  >
-                    {t('delete')}
-                  </button>
-                </div>
-              </td>
+      <div className="table-container">
+        <table className="data-table collaborators">
+          <thead>
+            <tr>
+              <th>{t('collaboratorId')}</th>
+              <th>{t('firstName')}</th>
+              <th>{t('lastName')}</th>
+              <th>{t('position')}</th>
+              <th>{t('team')}</th>
+              <th>{t('tags')}</th>
+              <th>{t('actions')}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {collaborators.map((collaborator) => (
+              <tr key={collaborator.id}>
+                <td>
+                  <span className="id-cell" title={collaborator.id}>
+                    {collaborator.id}
+                  </span>
+                </td>
+                <td>{collaborator.firstName}</td>
+                <td>{collaborator.lastName}</td>
+                <td>{getPositionName(collaborator.positionId)}</td>
+                <td>{getTeamName(collaborator.teamId)}</td>
+                <td>
+                  <div className="tags">
+                    {collaborator.tags.map((tag, index) => (
+                      <span key={index} className="tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+                <td>
+                  <div className="btn-group">
+                    <Link to={`/collaborators/edit/${collaborator.id}`} className="btn-secondary">
+                      {t('edit')}
+                    </Link>
+                    <button
+                      className="btn-danger"
+                      onClick={() => handleDelete(collaborator.id)}
+                    >
+                      {t('delete')}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
