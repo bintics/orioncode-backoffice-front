@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { SidebarProvider, useSidebarContext } from './contexts/SidebarContext';
 import Navigation from './components/Navigation';
 import PositionsList from './pages/positions/PositionsList';
 import PositionForm from './pages/positions/PositionForm';
@@ -8,12 +9,14 @@ import TeamsList from './pages/teams/TeamsList';
 import TeamForm from './pages/teams/TeamForm';
 import './i18n';
 
-function App() {
+const AppContent = () => {
+  const { isCollapsed } = useSidebarContext();
+
   return (
     <Router>
       <div className="app-container">
         <Navigation />
-        <main className="main-content">
+        <main className={`main-content ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
           <Routes>
             <Route path="/" element={<Navigate to="/positions" replace />} />
             
@@ -35,6 +38,14 @@ function App() {
         </main>
       </div>
     </Router>
+  );
+};
+
+function App() {
+  return (
+    <SidebarProvider>
+      <AppContent />
+    </SidebarProvider>
   );
 }
 

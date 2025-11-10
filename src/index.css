@@ -58,6 +58,19 @@ body {
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 100;
+  transition: width 0.3s ease, padding 0.3s ease;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.sidebar.collapsed {
+  width: 70px;
+  padding: 24px 12px;
 }
 
 .main-content {
@@ -66,13 +79,26 @@ body {
   padding: 32px;
   overflow-y: auto;
   min-width: 0; /* Permite que el contenido se comprima si es necesario */
+  margin-left: 280px; /* Espacio para sidebar normal */
+  transition: margin-left 0.3s ease;
+}
+
+.main-content.sidebar-collapsed {
+  margin-left: 70px; /* Espacio para sidebar colapsado */
 }
 
 /* Sidebar Styles */
 .sidebar-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 48px;
+  position: relative;
+  min-height: 48px;
+}
+
+.sidebar.collapsed .sidebar-header {
+  justify-content: center;
 }
 
 .logo {
@@ -83,7 +109,46 @@ body {
   text-decoration: none;
   font-size: 24px;
   font-weight: 700;
-  transition: opacity 0.2s ease;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar.collapsed .logo span {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.sidebar-toggle {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar-toggle:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.sidebar.collapsed .sidebar-toggle {
+  position: absolute;
+  right: -16px;
+  background-color: var(--bg-sidebar);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  z-index: 101;
 }
 
 .logo:hover {
@@ -120,6 +185,21 @@ body {
   text-decoration: none;
   transition: all 0.2s ease;
   font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+}
+
+.sidebar.collapsed .nav-link {
+  justify-content: center;
+  gap: 0;
+  padding: 12px;
+}
+
+.sidebar.collapsed .nav-link span:not(.nav-icon) {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .nav-link:hover {
@@ -139,6 +219,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .language-selector {
@@ -148,10 +229,40 @@ body {
   background-color: var(--bg-secondary);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  transition: all 0.3s ease;
+}
+
+.sidebar.collapsed .language-selector {
+  justify-content: center;
+  gap: 0;
+  padding: 12px;
+}
+
+.sidebar.collapsed .language-selector span:first-child {
+  display: none;
 }
 
 .language-button {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 40px;
+}
+
+.language-button:hover {
+  background: var(--accent-purple);
+  color: white;
+  border-color: var(--accent-purple);
+}
+
+.language-button-old {
   background: none;
   border: none;
   color: var(--text-primary);
@@ -685,6 +796,28 @@ a:hover {
 
 /* Para pantallas muy pequeñas */
 @media (max-width: 480px) {
+  /* Sidebar responsive */
+  .sidebar {
+    width: 100%;
+    transform: translateX(-100%);
+    z-index: 200;
+  }
+
+  .sidebar.collapsed {
+    transform: translateX(0);
+    width: 70px;
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .main-content.sidebar-collapsed {
+    margin-left: 70px;
+    width: calc(100% - 70px);
+  }
+
   .btn-group {
     flex-direction: column;
     width: 100%;
@@ -712,4 +845,43 @@ a:hover {
     font-size: 12px;
     min-width: 45px;
   }
+}
+
+/* Tooltips para sidebar colapsado */
+.sidebar.collapsed .nav-link:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 12px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.sidebar.collapsed .language-button:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 12px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  pointer-events: none;
 }
