@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { positionsService } from '../../services/positionsService';
 import { Position } from '../../types';
+import { usePaginatedData } from '../../hooks/usePaginatedData';
+import DataTable from '../../components/DataTable';
 
 const PositionsList = () => {
   const { t } = useTranslation();

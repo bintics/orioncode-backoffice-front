@@ -1,0 +1,23 @@
+{
+    "data": [
+        {
+            "id": "coll-0046", 
+            "firstName": "Ana", 
+            "lastName": "Martínez",
+            "position": "Desarrolladora Frontend",
+            "team": {
+                "id": "team-002",
+                "name": "Equipo Alfa"
+            },
+            "tags": ["React", "TypeScript", "UI/UX"],
+            "createdAt": "2023-11-10T09:15:00Z",
+            "updatedAt": "2024-05-20T14:30:00Z"
+        }
+    ],
+    "pagination": {
+        "page": 1,
+        "pageSize": 10,
+        "totalItems": 1,
+        "totalPages": 1
+    }
+}

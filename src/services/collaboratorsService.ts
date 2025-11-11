@@ -1,9 +1,11 @@
 import apiClient from './api';
-import { Collaborator } from '../types';
+import { Collaborator, CollaboratorsResponse } from '../types';
 
 export const collaboratorsService = {
-  getAll: async (): Promise<Collaborator[]> => {
-    const response = await apiClient.get<Collaborator[]>('/collaborators');
+  getAll: async (page: number = 1, pageSize: number = 10): Promise<CollaboratorsResponse> => {
+    const response = await apiClient.get<CollaboratorsResponse>('/collaborators', {
+      params: { page, pageSize }
+    });
     return response.data;
   },
 
@@ -12,12 +14,12 @@ export const collaboratorsService = {
     return response.data;
   },
 
-  create: async (collaborator: Collaborator): Promise<Collaborator> => {
+  create: async (collaborator: Omit<Collaborator, 'id' | 'createdAt' | 'updatedAt'>): Promise<Collaborator> => {
     const response = await apiClient.post<Collaborator>('/collaborators', collaborator);
     return response.data;
   },
 
-  update: async (id: string, collaborator: Collaborator): Promise<Collaborator> => {
+  update: async (id: string, collaborator: Partial<Collaborator>): Promise<Collaborator> => {
     const response = await apiClient.put<Collaborator>(`/collaborators/${id}`, collaborator);
     return response.data;
   },
