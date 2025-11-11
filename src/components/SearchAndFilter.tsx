@@ -43,7 +43,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
               className="filter-select"
               disabled={loading}
             >
-              <option value="">Seleccionar campo</option>
+              <option value="">Todos los campos</option>
               {availableFilters.map((filterName) => (
                 <option key={filterName} value={filterName}>
                   {filterName.charAt(0).toUpperCase() + filterName.slice(1)}
@@ -52,12 +52,12 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             </select>
             <input
               type="text"
-              placeholder={filterField ? `Valor para ${filterField.charAt(0).toUpperCase() + filterField.slice(1)}...` : "Valor a filtrar..."}
+              placeholder={filterField ? `Valor para ${filterField.charAt(0).toUpperCase() + filterField.slice(1)}...` : "Buscar en todos los campos..."}
               value={searchValue}
               onChange={(e) => onSearchValueChange(e.target.value)}
               onKeyPress={handleKeyPress}
               className="filter-input"
-              disabled={loading || !filterField}
+              disabled={loading}
             />
           </div>
         </div>
@@ -66,7 +66,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
         <div className="action-buttons">
           <button
             onClick={onApplyFilters}
-            disabled={loading}
+            disabled={loading || !searchValue.trim()}
             className="apply-button"
           >
             {loading ? 'Aplicando...' : 'Aplicar'}
@@ -82,11 +82,11 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
       </div>
 
       {/* Indicador de filtros activos */}
-      {(filterField && searchValue) && (
+      {searchValue && (
         <div className="active-filters">
           <span className="active-filters-label">Filtro activo:</span>
           <span className="active-filter-tag">
-            {filterField}: "{searchValue}"
+            {filterField ? `${filterField}: "${searchValue}"` : `Todos los campos: "${searchValue}"`}
             <button 
               onClick={() => {
                 onFilterFieldChange('');
