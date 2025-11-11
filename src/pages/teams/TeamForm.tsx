@@ -108,7 +108,7 @@ const TeamForm = () => {
               </div>
             </div>
 
-            {formData.tags.length > 0 && (
+            {formData?.tags?.length > 0 && (
               <div style={{marginTop: '1rem'}}>
                 <div className="tags">
                   {formData.tags.map((tag, index) => (
