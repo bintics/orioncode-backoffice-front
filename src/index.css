@@ -330,7 +330,7 @@ body {
 /* Buttons */
 .btn-primary {
   background-color: var(--accent-purple);
-  color: white;
+  color: white !important; /* Asegurar color blanco */
   border: none;
   padding: 14px 28px;
   border-radius: 8px;
@@ -348,6 +348,7 @@ body {
 
 .btn-primary:hover {
   background-color: var(--accent-purple-hover);
+  color: white !important; /* Forzar color blanco en hover */
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
 }
@@ -656,7 +657,7 @@ a {
   text-decoration: none;
 }
 
-a:hover {
+a:hover:not(.btn-primary):not(.btn-secondary):not(.btn-danger) {
   color: var(--accent-purple-hover);
 }
 
