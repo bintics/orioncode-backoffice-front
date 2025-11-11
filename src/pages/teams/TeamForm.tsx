@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { v4 as uuidv4 } from 'uuid';
 import { teamsService } from '../../services/teamsService';
+import { CreateTeamRequest } from '../../types';
 
 interface TeamFormData {
   name: string;
@@ -51,13 +53,16 @@ const TeamForm = () => {
       setError(null);
 
       // Convert form data to API format
-      const apiData = {
+      const apiData: CreateTeamRequest = {
+        id: uuidv4(), // Generate UUID for team
         name: formData.name,
         tags: formData.tags,
       };
 
       if (isEditing && id) {
-        await teamsService.update(id, apiData);
+        // For updates, we can use the same data structure but remove the id field
+        const { id: _, ...updateData } = apiData;
+        await teamsService.update(id, updateData);
       } else {
         await teamsService.create(apiData);
       }
