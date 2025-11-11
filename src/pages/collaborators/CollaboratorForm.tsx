@@ -1,135 +1,25 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { collaboratorsService } from '../../services/collaboratorsService';
-import { positionsService } from '../../services/positionsService';
-import { teamsService } from '../../services/teamsService';
-import { Position, Team } from '../../types';
-
-interface CollaboratorFormData {
-  firstName: string;
-  lastName: string;
-  position: string;
-  teamId: string;
-  tags: string[];
-}
+import { useCollaboratorForm } from '../../hooks/useCollaboratorForm';
 
 const CollaboratorForm = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-  const isEditing = Boolean(id);
-
-  const [formData, setFormData] = useState<CollaboratorFormData>({
-    firstName: '',
-    lastName: '',
-    position: '',
-    teamId: '',
-    tags: [],
-  });
-  const [positions, setPositions] = useState<Position[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [newTag, setNewTag] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadReferences();
-    if (id) {
-      loadCollaborator(id);
-    }
-  }, [id]);
-
-  const loadReferences = async () => {
-    try {
-      const [posData, teamData] = await Promise.all([
-        positionsService.getAll(),
-        teamsService.getAll(),
-      ]);
-      setPositions(posData.data || []);
-      setTeams(teamData.data || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error loading references');
-    }
-  };
-
-  const loadCollaborator = async (collaboratorId: string) => {
-    try {
-      setLoading(true);
-      const data = await collaboratorsService.getById(collaboratorId);
-      setFormData({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        position: data.position,
-        teamId: data.team.id,
-        tags: data.tags,
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error loading collaborator');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Convert form data to API format
-      const apiData = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        position: formData.position,
-        team: { id: formData.teamId, name: teams.find(t => t.id === formData.teamId)?.name || '' },
-        tags: formData.tags,
-      };
-
-      if (isEditing && id) {
-        await collaboratorsService.update(id, apiData);
-      } else {
-        await collaboratorsService.create(apiData);
-      }
-
-      navigate('/collaborators');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error saving collaborator');
-      setLoading(false);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleAddTag = () => {
-    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData({
-        ...formData,
-        tags: [...formData.tags, newTag.trim()],
-      });
-      setNewTag('');
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags.filter((tag) => tag !== tagToRemove),
-    });
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddTag();
-    }
-  };
+  
+  const {
+    formData,
+    positions,
+    teams,
+    newTag,
+    setNewTag,
+    loading,
+    error,
+    isEditing,
+    handleSubmit,
+    handleChange,
+    handleAddTag,
+    handleRemoveTag,
+    handleKeyPress,
+    handleCancel,
+  } = useCollaboratorForm();
 
   if (loading && isEditing) return <div className="loading">{t('loading')}</div>;
 
@@ -232,7 +122,7 @@ const CollaboratorForm = () => {
                 >
                   <option value="">{t('selectPosition')}</option>
                   {positions.map((position) => (
-                    <option key={position.id} value={position.name}>
+                    <option key={position.id} value={position.id}>
                       {position.name}
                     </option>
                   ))}
@@ -333,7 +223,7 @@ const CollaboratorForm = () => {
             <button
               type="button"
               className="btn-secondary"
-              onClick={() => navigate('/collaborators')}
+              onClick={handleCancel}
               disabled={loading}
             >
               {t('cancel', 'Cancelar')}

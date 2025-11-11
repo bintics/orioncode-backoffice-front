@@ -52,6 +52,25 @@ export interface Collaborator {
   updatedAt: string;
 }
 
+// Tipo específico para crear colaboradores (enviar al backend)
+export interface CreateCollaboratorRequest {
+  id: string;
+  firstName: string;
+  lastName: string;
+  positionId: string;
+  teamId: string;
+  tags: string[];
+}
+
+// Tipo específico para actualizar colaboradores 
+export interface UpdateCollaboratorRequest {
+  firstName?: string;
+  lastName?: string;
+  positionId?: string;
+  teamId?: string;
+  tags?: string[];
+}
+
 // Tipos específicos para las respuestas de API
 export type PositionsResponse = ApiResponse<Position>;
 export type TeamsResponse = ApiResponse<Team>;

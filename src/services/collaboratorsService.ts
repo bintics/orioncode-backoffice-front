@@ -1,4 +1,4 @@
-import { Collaborator, ApiResponse } from '../types';
+import { Collaborator, ApiResponse, CreateCollaboratorRequest, UpdateCollaboratorRequest } from '../types';
 import apiClient from './api';
 
 export const collaboratorsService = {
@@ -45,7 +45,7 @@ export const collaboratorsService = {
     }
   },
 
-  create: async (collaborator: Omit<Collaborator, 'id' | 'createdAt' | 'updatedAt'>): Promise<Collaborator> => {
+  create: async (collaborator: CreateCollaboratorRequest): Promise<Collaborator> => {
     try {
       const response = await apiClient.post<Collaborator>('/collaborators', collaborator);
       return response.data;
@@ -55,7 +55,7 @@ export const collaboratorsService = {
     }
   },
 
-  update: async (id: string, collaborator: Partial<Collaborator>): Promise<Collaborator> => {
+  update: async (id: string, collaborator: UpdateCollaboratorRequest): Promise<Collaborator> => {
     try {
       const response = await apiClient.put<Collaborator>(`/collaborators/${id}`, collaborator);
       return response.data;
