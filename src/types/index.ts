@@ -37,6 +37,21 @@ export interface Team {
   updatedAt?: string;
 }
 
+// Tipo específico para crear equipos (enviar al backend)
+export interface CreateTeamRequest {
+  id: string;
+  name: string;
+  description?: string;
+  tags: string[];
+}
+
+// Tipo específico para actualizar equipos
+export interface UpdateTeamRequest {
+  name?: string;
+  description?: string;
+  tags?: string[];
+}
+
 // Collaborator (Colaborador) - Nueva estructura del backend
 export interface Collaborator {
   id: string;
@@ -50,6 +65,25 @@ export interface Collaborator {
   tags: string[];
   createdAt: string;
   updatedAt: string;
+}
+
+// Tipo específico para crear colaboradores (enviar al backend)
+export interface CreateCollaboratorRequest {
+  id: string;
+  firstName: string;
+  lastName: string;
+  positionId: string;
+  teamId: string;
+  tags: string[];
+}
+
+// Tipo específico para actualizar colaboradores 
+export interface UpdateCollaboratorRequest {
+  firstName?: string;
+  lastName?: string;
+  positionId?: string;
+  teamId?: string;
+  tags?: string[];
 }
 
 // Tipos específicos para las respuestas de API
