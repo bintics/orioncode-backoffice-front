@@ -30,6 +30,21 @@ export const teamsService = {
     }
   },
 
+  // Función específica para obtener equipos para dropdowns
+  getAllForDropdown: async (): Promise<ApiResponse<Team>> => {
+    try {
+      const response = await apiClient.get<ApiResponse<Team>>('/teams', {
+        headers: {
+          'X-dropdown': 'true'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching teams for dropdown:', error);
+      throw new Error('Failed to fetch teams for dropdown');
+    }
+  },
+
   getById: async (id: string): Promise<Team> => {
     const response = await apiClient.get<Team>(`/teams/${id}`);
     return response.data;

@@ -1,109 +1,23 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { v4 as uuidv4 } from 'uuid';
-import { teamsService } from '../../services/teamsService';
-import { CreateTeamRequest } from '../../types';
-
-interface TeamFormData {
-  name: string;
-  tags: string[];
-}
+import { useTeamForm } from './useTeamForm';
 
 const TeamForm = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-  const isEditing = Boolean(id);
-
-  const [formData, setFormData] = useState<TeamFormData>({
-    name: '',
-    tags: [],
-  });
-  const [newTag, setNewTag] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (id) {
-      loadTeam(id);
-    }
-  }, [id]);
-
-  const loadTeam = async (teamId: string) => {
-    try {
-      setLoading(true);
-      const response = await teamsService.getById(teamId);
-      setFormData({
-        name: response.name,
-        tags: response.tags,
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error loading team');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Convert form data to API format
-      const apiData: CreateTeamRequest = {
-        id: uuidv4(), // Generate UUID for team
-        name: formData.name,
-        tags: formData.tags,
-      };
-
-      if (isEditing && id) {
-        // For updates, we can use the same data structure but remove the id field
-        const { id: _, ...updateData } = apiData;
-        await teamsService.update(id, updateData);
-      } else {
-        await teamsService.create(apiData);
-      }
-
-      navigate('/teams');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error saving team');
-      setLoading(false);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleAddTag = () => {
-    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData({
-        ...formData,
-        tags: [...formData.tags, newTag.trim()],
-      });
-      setNewTag('');
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags.filter((tag) => tag !== tagToRemove),
-    });
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddTag();
-    }
-  };
+  
+  const {
+    formData,
+    newTag,
+    setNewTag,
+    loading,
+    error,
+    isEditing,
+    handleSubmit,
+    handleChange,
+    handleAddTag,
+    handleRemoveTag,
+    handleKeyPress,
+    handleCancel,
+  } = useTeamForm();
 
   if (loading && isEditing) return <div className="loading">{t('loading')}</div>;
 
@@ -194,7 +108,7 @@ const TeamForm = () => {
               </div>
             </div>
 
-            {formData.tags.length > 0 && (
+            {formData?.tags?.length > 0 && (
               <div style={{marginTop: '1rem'}}>
                 <div className="tags">
                   {formData.tags.map((tag, index) => (
@@ -226,7 +140,7 @@ const TeamForm = () => {
             <button
               type="button"
               className="btn-secondary"
-              onClick={() => navigate('/teams')}
+              onClick={handleCancel}
               disabled={loading}
             >
               {t('cancel', 'Cancelar')}

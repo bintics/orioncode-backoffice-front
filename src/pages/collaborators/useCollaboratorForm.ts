@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { collaboratorsService } from '../services/collaboratorsService';
-import { positionsService } from '../services/positionsService';
-import { teamsService } from '../services/teamsService';
-import { Position, Team, CreateCollaboratorRequest } from '../types';
+import { collaboratorsService } from '../../services/collaboratorsService';
+import { positionsService } from '../../services/positionsService';
+import { teamsService } from '../../services/teamsService';
+import { Position, Team, CreateCollaboratorRequest } from '../../types';
 
 interface CollaboratorFormData {
   firstName: string;
@@ -59,50 +59,115 @@ export const useCollaboratorForm = (): UseCollaboratorFormReturn => {
   const [newTag, setNewTag] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [collaboratorLoaded, setCollaboratorLoaded] = useState(false);
+  const [referencesLoaded, setReferencesLoaded] = useState(false); // Flag para evitar recargas
+  const isLoadingRef = useRef(false); // Para evitar múltiples cargas simultáneas
 
   useEffect(() => {
-    loadReferences();
-  }, []);
+    if (!referencesLoaded) {
+      loadReferences();
+    }
+  }, [referencesLoaded]);
 
   useEffect(() => {
-    if (id && positions.length > 0) {
+    if (id && referencesLoaded && positions.length > 0 && teams.length > 0 && !collaboratorLoaded && !isLoadingRef.current) {
       loadCollaborator(id);
     }
-  }, [id, positions]);
+  }, [id, referencesLoaded, positions, teams, collaboratorLoaded]);
+
+  // Debug: Verificar que los valores se mantienen
+  /*
+  useEffect(() => {
+    console.log('🔄 Form state check:', {
+      collaboratorLoaded,
+      hasPosition: !!formData.position,
+      hasTeam: !!formData.teamId,
+      formData,
+      positionsCount: positions.length,
+      teamsCount: teams.length
+    });
+  }, [formData, collaboratorLoaded, positions, teams]);
+  */
 
   const loadReferences = async () => {
+    if (referencesLoaded || isLoadingRef.current) {
+      console.log('🔄 Skipping reference load (already loaded or loading)');
+      return;
+    }
+    
     try {
-      const [posData, teamData] = await Promise.all([
-        positionsService.getAll(),
-        teamsService.getAll(),
-      ]);
-      setPositions(posData.data || []);
+      isLoadingRef.current = true;
+      
+      const posData = await positionsService.getAllForDropdown();
+      
+      const teamData = await teamsService.getAllForDropdown();
+      
+      setPositions(posData || []);
       setTeams(teamData.data || []);
+      setReferencesLoaded(true);
+      
     } catch (err) {
+      console.error('❌ Error loading references:', err);
       setError(err instanceof Error ? err.message : 'Error loading references');
+    } finally {
+      isLoadingRef.current = false;
     }
   };
 
   const loadCollaborator = async (collaboratorId: string) => {
+    if (isLoadingRef.current) {
+      console.log('🔄 Skipping collaborator load (already loading)');
+      return; // Evitar múltiples cargas simultáneas
+    }
+    
     try {
+      isLoadingRef.current = true;
       setLoading(true);
+      console.log('🔄 Loading collaborator...');
+      
       const data = await collaboratorsService.getById(collaboratorId);
       
+      console.log('🔍 Raw collaborator data:', data);
+      console.log('🔍 Available positions:', positions.map(p => ({ id: p.id, name: p.name })));
+      console.log('🔍 Available teams:', teams.map(t => ({ id: t.id, name: t.name })));
+      
       // Find position ID by position name
-      const position = positions.find(p => p.name === data.position);
+      const position = positions.find(p => p.id === data.position.id);
       const positionId = position?.id || '';
       
-      setFormData({
+      // Find team by team id (data.team.id should match)
+      const team = teams.find(t => t.id === data.team.id);
+      const teamId = team?.id || data.team.id; // Fallback to original ID
+      
+      console.log('🔍 Position mapping:', {
+        searchingFor: data.position,
+        found: position,
+        resultId: positionId
+      });
+      console.log('🔍 Team mapping:', {
+        searchingFor: data.team.id,
+        found: team,
+        resultId: teamId
+      });
+      
+      const newFormData = {
         firstName: data.firstName,
         lastName: data.lastName,
         position: positionId, // Store position ID
-        teamId: data.team.id,
+        teamId: teamId,
         tags: data.tags,
-      });
+      };
+      
+      console.log('🔍 Setting form data:', newFormData);
+      
+      setFormData(newFormData);
+      setCollaboratorLoaded(true); // Marcar como cargado para evitar re-ejecuciones
     } catch (err) {
+      console.error('❌ Error loading collaborator:', err);
       setError(err instanceof Error ? err.message : 'Error loading collaborator');
     } finally {
       setLoading(false);
+      isLoadingRef.current = false;
     }
   };
 

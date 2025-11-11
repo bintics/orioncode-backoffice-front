@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useCollaboratorForm } from '../../hooks/useCollaboratorForm';
+import { useCollaboratorForm } from './useCollaboratorForm';
 
 const CollaboratorForm = () => {
   const { t } = useTranslation();
