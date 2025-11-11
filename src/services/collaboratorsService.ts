@@ -5,8 +5,8 @@ export const collaboratorsService = {
   getAll: async (
     page: number = 1, 
     pageSize: number = 10,
-    _search: string = '', // Mantenido para compatibilidad con la interfaz
-    filter: string = ''
+    search: string = '', // Valor de búsqueda
+    filter: string = ''  // Campo por el cual filtrar
   ): Promise<ApiResponse<Collaborator>> => {
     try {
       // Construir parámetros de consulta
@@ -15,13 +15,14 @@ export const collaboratorsService = {
         pageSize: pageSize.toString(),
       });
 
-      // Agregar parámetros opcionales solo si tienen valor
-      if (filter && filter.includes(':')) {
-        const [field, value] = filter.split(':');
-        // Solo enviar el filtro si tanto el campo como el valor tienen contenido
-        if (field && value && value.trim()) {
-          params.append('filter', filter);
-        }
+      // Agregar filtro si está especificado
+      if (filter && filter.trim()) {
+        params.append('filter', filter);
+      }
+
+      // Agregar search si está especificado
+      if (search && search.trim()) {
+        params.append('search', search);
       }
 
       // Hacer la llamada real al API

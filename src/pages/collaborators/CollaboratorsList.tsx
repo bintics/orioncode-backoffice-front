@@ -14,9 +14,11 @@ const CollaboratorsList = () => {
     pagination, 
     loading, 
     error,
-    filter,
+    filterField,
+    searchValue,
     availableFilters,
-    setFilter,
+    setFilterField,
+    setSearchValue,
     clearFilters,
     applyFilters,
     reload, 
@@ -119,9 +121,11 @@ const CollaboratorsList = () => {
       </div>
 
       <SearchAndFilter
-        filter={filter}
+        filterField={filterField}
+        searchValue={searchValue}
         availableFilters={availableFilters}
-        onFilterChange={setFilter}
+        onFilterFieldChange={setFilterField}
+        onSearchValueChange={setSearchValue}
         onApplyFilters={applyFilters}
         onClearFilters={clearFilters}
         loading={loading}

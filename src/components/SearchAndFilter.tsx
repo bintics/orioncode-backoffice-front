@@ -1,18 +1,22 @@
 import React from 'react';
 
 interface SearchAndFilterProps {
-  filter: string;
+  filterField: string;
+  searchValue: string;
   availableFilters: string[];
-  onFilterChange: (filter: string) => void;
+  onFilterFieldChange: (field: string) => void;
+  onSearchValueChange: (value: string) => void;
   onApplyFilters: () => void;
   onClearFilters: () => void;
   loading?: boolean;
 }
 
 export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
-  filter,
+  filterField,
+  searchValue,
   availableFilters,
-  onFilterChange,
+  onFilterFieldChange,
+  onSearchValueChange,
   onApplyFilters,
   onClearFilters,
   loading = false,
@@ -20,34 +24,6 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       onApplyFilters();
-    }
-  };
-
-  const parseFilter = () => {
-    if (!filter) return { field: '', value: '' };
-    const [field, value] = filter.split(':');
-    return { field: field || '', value: value || '' };
-  };
-
-  const { field, value } = parseFilter();
-
-  const handleFilterFieldChange = (newField: string) => {
-    if (newField) {
-      // Mantener el valor actual si existe, o usar cadena vacía
-      onFilterChange(`${newField}:${value}`);
-    } else {
-      // Si no hay campo seleccionado, limpiar todo el filtro
-      onFilterChange('');
-    }
-  };
-
-  const handleFilterValueChange = (newValue: string) => {
-    if (field) {
-      // Siempre actualizar si hay un campo seleccionado, incluso si el valor está vacío
-      onFilterChange(`${field}:${newValue}`);
-    } else {
-      // Si no hay campo seleccionado, no hacer nada
-      onFilterChange('');
     }
   };
 
@@ -62,8 +38,8 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
           <div className="filter-inputs">
             <select
               id="filter-field"
-              value={field}
-              onChange={(e) => handleFilterFieldChange(e.target.value)}
+              value={filterField}
+              onChange={(e) => onFilterFieldChange(e.target.value)}
               className="filter-select"
               disabled={loading}
             >
@@ -76,12 +52,12 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             </select>
             <input
               type="text"
-              placeholder={field ? `Valor para ${field.charAt(0).toUpperCase() + field.slice(1)}...` : "Valor a filtrar..."}
-              value={value}
-              onChange={(e) => handleFilterValueChange(e.target.value)}
+              placeholder={filterField ? `Valor para ${filterField.charAt(0).toUpperCase() + filterField.slice(1)}...` : "Valor a filtrar..."}
+              value={searchValue}
+              onChange={(e) => onSearchValueChange(e.target.value)}
               onKeyPress={handleKeyPress}
               className="filter-input"
-              disabled={loading || !field}
+              disabled={loading || !filterField}
             />
           </div>
         </div>
@@ -106,13 +82,16 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
       </div>
 
       {/* Indicador de filtros activos */}
-      {(filter && field && value) && (
+      {(filterField && searchValue) && (
         <div className="active-filters">
           <span className="active-filters-label">Filtro activo:</span>
           <span className="active-filter-tag">
-            {field}: "{value}"
+            {filterField}: "{searchValue}"
             <button 
-              onClick={() => onFilterChange('')}
+              onClick={() => {
+                onFilterFieldChange('');
+                onSearchValueChange('');
+              }}
               className="remove-filter"
               disabled={loading}
             >

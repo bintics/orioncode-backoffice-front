@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ApiResponse, PaginationInfo, ApiMetadata } from '../types';
 
 interface UseFilteredPaginatedDataProps<T> {
@@ -13,9 +14,11 @@ interface UseFilteredPaginatedDataReturn<T> {
   metadata: ApiMetadata | undefined;
   loading: boolean;
   error: string | null;
-  filter: string;
+  filterField: string;
+  searchValue: string;
   availableFilters: string[];
-  setFilter: (filter: string) => void;
+  setFilterField: (field: string) => void;
+  setSearchValue: (value: string) => void;
   clearFilters: () => void;
   applyFilters: () => Promise<void>;
   reload: () => Promise<void>;
@@ -30,52 +33,109 @@ export const useFilteredPaginatedData = <T>({
   dependencies = [],
   initialPageSize = 10,
 }: UseFilteredPaginatedDataProps<T>): UseFilteredPaginatedDataReturn<T> => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  
   const [data, setData] = useState<T[]>([]);
-  const [pagination, setPagination] = useState<PaginationInfo>({
-    page: 1,
-    pageSize: initialPageSize,
-    totalItems: 0,
-    totalPages: 1,
-  });
   const [metadata, setMetadata] = useState<ApiMetadata | undefined>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Estados para filtros
-  const [filter, setFilterState] = useState<string>('');
+  // Obtener valores desde la URL
+  const pageFromUrl = parseInt(searchParams.get('page') || '1', 10);
+  const pageSizeFromUrl = parseInt(searchParams.get('pageSize') || initialPageSize.toString(), 10);
+  const filterFieldFromUrl = searchParams.get('filter') || '';
+  const searchValueFromUrl = searchParams.get('search') || '';
   
-  // Estados internos para las consultas activas
-  const [activeFilter, setActiveFilter] = useState<string>('');
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    page: pageFromUrl,
+    pageSize: pageSizeFromUrl,
+    totalItems: 0,
+    totalPages: 1,
+  });
+  
+  // Estados para filtros - separados según API
+  const [filterField, setFilterFieldState] = useState<string>(filterFieldFromUrl);
+  const [searchValue, setSearchValueState] = useState<string>(searchValueFromUrl);
 
   const availableFilters = useMemo(() => {
     return metadata?.filters || [];
   }, [metadata]);
 
+  // Función para actualizar los URL params
+  const updateUrlParams = useCallback((updates: { 
+    page?: number; 
+    pageSize?: number; 
+    filterField?: string; 
+    searchValue?: string; 
+  }) => {
+    setSearchParams(prev => {
+      const newParams = new URLSearchParams(prev);
+      
+      if (updates.page !== undefined) {
+        if (updates.page === 1) {
+          newParams.delete('page');
+        } else {
+          newParams.set('page', updates.page.toString());
+        }
+      }
+      
+      if (updates.pageSize !== undefined) {
+        if (updates.pageSize === initialPageSize) {
+          newParams.delete('pageSize');
+        } else {
+          newParams.set('pageSize', updates.pageSize.toString());
+        }
+      }
+      
+      if (updates.filterField !== undefined) {
+        if (updates.filterField === '') {
+          newParams.delete('filter');
+        } else {
+          newParams.set('filter', updates.filterField);
+        }
+      }
+      
+      if (updates.searchValue !== undefined) {
+        if (updates.searchValue === '') {
+          newParams.delete('search');
+        } else {
+          newParams.set('search', updates.searchValue);
+        }
+      }
+      
+      return newParams;
+    });
+  }, [setSearchParams, initialPageSize]);
+
   const loadData = async (
     page: number = pagination.page,
     pageSize: number = pagination.pageSize,
-    filterValue: string = activeFilter
+    searchVal: string = searchValue,
+    filterFieldVal: string = filterField
   ) => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await fetchFunction(page, pageSize, '', filterValue);
+      const response = await fetchFunction(page, pageSize, searchVal, filterFieldVal);
       
       setData(Array.isArray(response?.data) ? response.data : []);
       setPagination(response?.pagination || {
-        page: 1,
-        pageSize: initialPageSize,
+        page: page,
+        pageSize: pageSize,
         totalItems: 0,
         totalPages: 1,
       });
       setMetadata(response?.metadata);
+      
+      // Actualizar URL
+      updateUrlParams({ page, pageSize, filterField: filterFieldVal, searchValue: searchVal });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       setData([]);
       setPagination({
         page: 1,
-        pageSize: initialPageSize,
+        pageSize: pageSize,
         totalItems: 0,
         totalPages: 1,
       });
@@ -84,24 +144,27 @@ export const useFilteredPaginatedData = <T>({
     }
   };
 
-  const setFilter = (newFilter: string) => {
-    setFilterState(newFilter);
+  const setFilterField = (newFilterField: string) => {
+    setFilterFieldState(newFilterField);
+  };
+
+  const setSearchValue = (newSearchValue: string) => {
+    setSearchValueState(newSearchValue);
   };
 
   const clearFilters = () => {
-    setFilterState('');
-    setActiveFilter('');
-    loadData(1, pagination.pageSize, '');
+    setFilterFieldState('');
+    setSearchValueState('');
+    loadData(1, pagination.pageSize, '', '');
   };
 
   const applyFilters = async () => {
-    setActiveFilter(filter);
-    await loadData(1, pagination.pageSize, filter);
+    await loadData(1, pagination.pageSize, searchValue, filterField);
   };
 
   const goToPage = async (page: number) => {
     if (page >= 1 && page <= pagination.totalPages) {
-      await loadData(page, pagination.pageSize, activeFilter);
+      await loadData(page, pagination.pageSize, searchValue, filterField);
     }
   };
 
@@ -118,16 +181,30 @@ export const useFilteredPaginatedData = <T>({
   };
 
   const changePageSize = async (pageSize: number) => {
-    await loadData(1, pageSize, activeFilter);
+    await loadData(1, pageSize, searchValue, filterField);
   };
 
   const reload = async () => {
-    await loadData(pagination.page, pagination.pageSize, activeFilter);
+    await loadData(pagination.page, pagination.pageSize, searchValue, filterField);
   };
 
+  // Effect para cargar datos iniciales y responder a cambios en URL
   useEffect(() => {
-    loadData(1, initialPageSize, '');
-  }, dependencies);
+    const currentPage = parseInt(searchParams.get('page') || '1', 10);
+    const currentPageSize = parseInt(searchParams.get('pageSize') || initialPageSize.toString(), 10);
+    const currentFilterField = searchParams.get('filter') || '';
+    const currentSearchValue = searchParams.get('search') || '';
+    
+    // Actualizar estado local si es diferente
+    if (filterField !== currentFilterField) {
+      setFilterFieldState(currentFilterField);
+    }
+    if (searchValue !== currentSearchValue) {
+      setSearchValueState(currentSearchValue);
+    }
+    
+    loadData(currentPage, currentPageSize, currentSearchValue, currentFilterField);
+  }, [searchParams, ...dependencies]);
 
   return {
     data,
@@ -135,9 +212,11 @@ export const useFilteredPaginatedData = <T>({
     metadata,
     loading,
     error,
-    filter,
+    filterField,
+    searchValue,
     availableFilters,
-    setFilter,
+    setFilterField,
+    setSearchValue,
     clearFilters,
     applyFilters,
     reload,
