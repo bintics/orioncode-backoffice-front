@@ -12,6 +12,7 @@ const PositionForm = () => {
 
   const [formData, setFormData] = useState<Position>({
     name: '',
+    description: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,37 +71,73 @@ const PositionForm = () => {
   if (loading && isEditing) return <div className="loading">{t('loading')}</div>;
 
   return (
-    <div>
-      <h1>{isEditing ? t('editPosition') : t('createPosition')}</h1>
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">
+          {isEditing ? t('editPosition') : t('createPosition')}
+        </h1>
+      </div>
 
-      {error && <div className="error">{t('error')}: {error}</div>}
-
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="name">{t('positionName')}</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
+      {error && (
+        <div className="alert alert-error">
+          <strong>{t('error')}:</strong> {error}
         </div>
+      )}
 
-        <div className="btn-group">
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? t('loading') : t('save')}
-          </button>
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => navigate('/positions')}
-          >
-            {t('cancel')}
-          </button>
-        </div>
-      </form>
+      <div className="form-container">
+        <form onSubmit={handleSubmit} className="form">
+          <div className="form-group">
+            <label htmlFor="name" className="form-label">
+              {t('positionName')} <span className="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="form-input"
+              placeholder={t('enterPositionName', 'Ingrese el nombre del puesto')}
+              required
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="description" className="form-label">
+              {t('description')}
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description || ''}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="form-textarea"
+              placeholder={t('enterDescription', 'Ingrese una descripción (opcional)')}
+              rows={4}
+              disabled={loading}
+            />
+          </div>
+
+          <div className="form-actions">
+            <button 
+              type="submit" 
+              className="btn-primary" 
+              disabled={loading || !formData.name.trim()}
+            >
+              {loading ? t('saving', 'Guardando...') : t('save', 'Guardar')}
+            </button>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => navigate('/positions')}
+              disabled={loading}
+            >
+              {t('cancel', 'Cancelar')}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

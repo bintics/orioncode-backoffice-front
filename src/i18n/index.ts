@@ -31,6 +31,9 @@ const resources = {
       createPosition: 'Create Position',
       editPosition: 'Edit Position',
       positionsList: 'Positions List',
+      enterPositionName: 'Enter position name',
+      enterDescription: 'Enter description (optional)',
+      saving: 'Saving...',
       
       // Collaborators
       collaboratorId: 'Collaborator ID',
@@ -81,6 +84,9 @@ const resources = {
       createPosition: 'Crear Puesto',
       editPosition: 'Editar Puesto',
       positionsList: 'Lista de Puestos',
+      enterPositionName: 'Ingrese el nombre del puesto',
+      enterDescription: 'Ingrese una descripción (opcional)',
+      saving: 'Guardando...',
       
       // Collaborators
       collaboratorId: 'ID de Colaborador',

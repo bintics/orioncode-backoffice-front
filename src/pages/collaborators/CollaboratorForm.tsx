@@ -4,7 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { collaboratorsService } from '../../services/collaboratorsService';
 import { positionsService } from '../../services/positionsService';
 import { teamsService } from '../../services/teamsService';
-import { Collaborator, Position, Team } from '../../types';
+import { Position, Team } from '../../types';
+
+interface CollaboratorFormData {
+  firstName: string;
+  lastName: string;
+  position: string;
+  teamId: string;
+  tags: string[];
+}
 
 const CollaboratorForm = () => {
   const { t } = useTranslation();
@@ -12,11 +20,10 @@ const CollaboratorForm = () => {
   const { id } = useParams<{ id: string }>();
   const isEditing = Boolean(id);
 
-  const [formData, setFormData] = useState<Collaborator>({
-    id: '',
+  const [formData, setFormData] = useState<CollaboratorFormData>({
     firstName: '',
     lastName: '',
-    positionId: '',
+    position: '',
     teamId: '',
     tags: [],
   });
@@ -30,12 +37,6 @@ const CollaboratorForm = () => {
     loadReferences();
     if (id) {
       loadCollaborator(id);
-    } else {
-      // Generate UUID for new collaborator
-      setFormData((prev) => ({
-        ...prev,
-        id: crypto.randomUUID(),
-      }));
     }
   }, [id]);
 
@@ -45,10 +46,10 @@ const CollaboratorForm = () => {
         positionsService.getAll(),
         teamsService.getAll(),
       ]);
-      setPositions(posData);
-      setTeams(teamData);
+      setPositions(posData.data || []);
+      setTeams(teamData.data || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred loading references');
+      setError(err instanceof Error ? err.message : 'Error loading references');
     }
   };
 
@@ -56,9 +57,15 @@ const CollaboratorForm = () => {
     try {
       setLoading(true);
       const data = await collaboratorsService.getById(collaboratorId);
-      setFormData(data);
+      setFormData({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        position: data.position,
+        teamId: data.team.id,
+        tags: data.tags,
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'Error loading collaborator');
     } finally {
       setLoading(false);
     }
@@ -71,15 +78,24 @@ const CollaboratorForm = () => {
       setLoading(true);
       setError(null);
 
+      // Convert form data to API format
+      const apiData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        position: formData.position,
+        team: { id: formData.teamId, name: teams.find(t => t.id === formData.teamId)?.name || '' },
+        tags: formData.tags,
+      };
+
       if (isEditing && id) {
-        await collaboratorsService.update(id, formData);
+        await collaboratorsService.update(id, apiData);
       } else {
-        await collaboratorsService.create(formData);
+        await collaboratorsService.create(apiData);
       }
 
       navigate('/collaborators');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'Error saving collaborator');
       setLoading(false);
     }
   };
@@ -108,123 +124,223 @@ const CollaboratorForm = () => {
     });
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddTag();
+    }
+  };
+
   if (loading && isEditing) return <div className="loading">{t('loading')}</div>;
 
   return (
-    <div>
-      <h1>{isEditing ? t('editCollaborator') : t('createCollaborator')}</h1>
+    <div className="page-container">
+      <div className="page-header">
+        <h1 className="page-title">
+          {isEditing ? t('editCollaborator') : t('createCollaborator')}
+        </h1>
+      </div>
 
-      {error && <div className="error">{t('error')}: {error}</div>}
-
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="firstName">{t('firstName')}</label>
-          <input
-            type="text"
-            id="firstName"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
-          />
+      {error && (
+        <div className="alert alert-error">
+          <strong>{t('error')}:</strong> {error}
         </div>
+      )}
 
-        <div className="form-group">
-          <label htmlFor="lastName">{t('lastName')}</label>
-          <input
-            type="text"
-            id="lastName"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            required
-          />
-        </div>
+      <div className="form-container">
+        <form onSubmit={handleSubmit} className="form">
+          {/* Personal Information */}
+          <div style={{
+            marginBottom: '2rem', 
+            paddingBottom: '1.5rem', 
+            borderBottom: '1px solid var(--border-color)'
+          }}>
+            <h3 style={{
+              marginBottom: '1rem', 
+              color: 'var(--accent-purple)',
+              fontSize: '1.1rem',
+              fontWeight: '600'
+            }}>
+              {t('personalInfo', 'Personal Information')}
+            </h3>
 
-        <div className="form-group">
-          <label htmlFor="positionId">{t('position')}</label>
-          <select
-            id="positionId"
-            name="positionId"
-            value={formData.positionId}
-            onChange={handleChange}
-            required
-          >
-            <option value="">{t('selectPosition')}</option>
-            {positions.map((position) => (
-              <option key={position.id} value={position.id}>
-                {position.name}
-              </option>
-            ))}
-          </select>
-        </div>
+            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
+              <div className="form-group">
+                <label htmlFor="firstName" className="form-label">
+                  {t('firstName')} <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  className="form-input"
+                  placeholder={t('enterFirstName', 'Ingrese el nombre')}
+                  required
+                  disabled={loading}
+                />
+              </div>
 
-        <div className="form-group">
-          <label htmlFor="teamId">{t('team')}</label>
-          <select
-            id="teamId"
-            name="teamId"
-            value={formData.teamId}
-            onChange={handleChange}
-            required
-          >
-            <option value="">{t('selectTeam')}</option>
-            {teams.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-        </div>
+              <div className="form-group">
+                <label htmlFor="lastName" className="form-label">
+                  {t('lastName')} <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  className="form-input"
+                  placeholder={t('enterLastName', 'Ingrese el apellido')}
+                  required
+                  disabled={loading}
+                />
+              </div>
+            </div>
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="newTag">{t('tags')}</label>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <input
-              type="text"
-              id="newTag"
-              value={newTag}
-              onChange={(e) => setNewTag(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleAddTag();
-                }
-              }}
-            />
+          {/* Work Information */}
+          <div style={{
+            marginBottom: '2rem', 
+            paddingBottom: '1.5rem', 
+            borderBottom: '1px solid var(--border-color)'
+          }}>
+            <h3 style={{
+              marginBottom: '1rem', 
+              color: 'var(--accent-purple)',
+              fontSize: '1.1rem',
+              fontWeight: '600'
+            }}>
+              {t('workInfo', 'Work Information')}
+            </h3>
+
+            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
+              <div className="form-group">
+                <label htmlFor="position" className="form-label">
+                  {t('position')} <span className="required">*</span>
+                </label>
+                <select
+                  id="position"
+                  name="position"
+                  value={formData.position}
+                  onChange={handleChange}
+                  className="form-select"
+                  required
+                  disabled={loading}
+                >
+                  <option value="">{t('selectPosition')}</option>
+                  {positions.map((position) => (
+                    <option key={position.id} value={position.name}>
+                      {position.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="teamId" className="form-label">
+                  {t('team')} <span className="required">*</span>
+                </label>
+                <select
+                  id="teamId"
+                  name="teamId"
+                  value={formData.teamId}
+                  onChange={handleChange}
+                  className="form-select"
+                  required
+                  disabled={loading}
+                >
+                  <option value="">{t('selectTeam')}</option>
+                  {teams.map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Tags */}
+          <div>
+            <h3 style={{
+              marginBottom: '1rem', 
+              color: 'var(--accent-purple)',
+              fontSize: '1.1rem',
+              fontWeight: '600'
+            }}>
+              {t('tags')}
+            </h3>
+
+            <div className="form-group">
+              <label htmlFor="newTag" className="form-label">
+                {t('addTag', 'Add Tag')}
+              </label>
+              <div style={{display: 'flex', gap: '0.5rem'}}>
+                <input
+                  type="text"
+                  id="newTag"
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="form-input"
+                  placeholder={t('enterTag', 'Ingrese una etiqueta')}
+                  style={{flex: 1}}
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={handleAddTag}
+                  className="btn-secondary"
+                  disabled={loading || !newTag.trim()}
+                >
+                  {t('add', 'Agregar')}
+                </button>
+              </div>
+            </div>
+
+            {formData.tags.length > 0 && (
+              <div style={{marginTop: '1rem'}}>
+                <div className="tags">
+                  {formData.tags.map((tag, index) => (
+                    <span key={index} className="tag">
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag)}
+                        className="remove-filter"
+                        disabled={loading}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="form-actions">
+            <button 
+              type="submit" 
+              className="btn-primary" 
+              disabled={loading || !formData.firstName.trim() || !formData.lastName.trim() || !formData.position || !formData.teamId}
+            >
+              {loading ? t('saving', 'Guardando...') : t('save', 'Guardar')}
+            </button>
             <button
               type="button"
-              onClick={handleAddTag}
               className="btn-secondary"
+              onClick={() => navigate('/collaborators')}
+              disabled={loading}
             >
-              {t('addTag')}
+              {t('cancel', 'Cancelar')}
             </button>
           </div>
-          <div className="tags">
-            {formData.tags.map((tag, index) => (
-              <span key={index} className="tag">
-                {tag}
-                <button type="button" onClick={() => handleRemoveTag(tag)}>
-                  ×
-                </button>
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="btn-group">
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? t('loading') : t('save')}
-          </button>
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => navigate('/collaborators')}
-          >
-            {t('cancel')}
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };
