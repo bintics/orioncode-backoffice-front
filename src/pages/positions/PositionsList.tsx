@@ -2,31 +2,33 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { positionsService } from '../../services/positionsService';
 import { Position } from '../../types';
-import { usePaginatedData } from '../../hooks/usePaginatedData';
+import { useFilteredPaginatedData } from '../../hooks/useFilteredPaginatedData';
 import DataTable from '../../components/DataTable';
+import { SearchAndFilter } from '../../components/SearchAndFilter';
 
 const PositionsList = () => {
   const { t } = useTranslation();
-  const [positions, setPositions] = useState<Position[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadPositions();
-  }, []);
-
-  const loadPositions = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await positionsService.getAll();
-      setPositions(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { 
+    data: positions, 
+    pagination, 
+    loading, 
+    error,
+    filterField,
+    searchValue,
+    availableFilters,
+    setFilterField,
+    setSearchValue,
+    clearFilters,
+    applyFilters,
+    reload, 
+    goToPage, 
+    goToNextPage, 
+    goToPreviousPage, 
+    changePageSize 
+  } = useFilteredPaginatedData({
+    fetchFunction: positionsService.getAll,
+  });
 
   const handleDelete = async (id: string) => {
     if (!window.confirm(t('confirmDelete'))) {
@@ -35,14 +37,55 @@ const PositionsList = () => {
 
     try {
       await positionsService.delete(id);
-      await loadPositions();
+      await reload();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Error deleting position:', err);
     }
   };
 
-  if (loading) return <div className="loading">{t('loading')}</div>;
-  if (error) return <div className="error">{t('error')}: {error}</div>;
+  const columns = [
+    {
+      key: 'id',
+      header: t('positionId'),
+      render: (position: Position) => (
+        <span className="id-cell" title={position?.id}>
+          {position?.id}
+        </span>
+      ),
+      width: '180px',
+    },
+    {
+      key: 'name',
+      header: t('positionName'),
+      withd: '300px',
+      render: (position: Position) => position?.name || '',
+    },
+    {
+      key: 'description',
+      header: t('description'),
+      width: '500px',
+      render: (position: Position) => position?.description || '',
+    },
+    {
+      key: 'actions',
+      header: t('actions'),
+      render: (position: Position) => (
+        <div className="btn-group">
+          <Link to={`/positions/edit/${position?.id}`} className="btn-secondary">
+            {t('edit')}
+          </Link>
+          <button
+            className="btn-danger"
+            onClick={() => position?.id && handleDelete(position.id)}
+          >
+            {t('delete')}
+          </button>
+        </div>
+      ),
+      width: '200px',
+      className: 'text-right',
+    },
+  ];
 
   return (
     <div className="page-container">
@@ -53,36 +96,30 @@ const PositionsList = () => {
         </Link>
       </div>
 
-      <div className="table-container">
-        <table className="data-table simple">
-          <thead>
-            <tr>
-              <th>{t('name')}</th>
-              <th>{t('actions')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {positions.map((position) => (
-              <tr key={position.id}>
-                <td>{position.name}</td>
-                <td>
-                  <div className="btn-group">
-                    <Link to={`/positions/edit/${position.id}`} className="btn-secondary">
-                      {t('edit')}
-                    </Link>
-                    <button
-                      className="btn-danger"
-                      onClick={() => handleDelete(position.id!)}
-                    >
-                      {t('delete')}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <SearchAndFilter
+        filterField={filterField}
+        searchValue={searchValue}
+        availableFilters={availableFilters}
+        onFilterFieldChange={setFilterField}
+        onSearchValueChange={setSearchValue}
+        onApplyFilters={applyFilters}
+        onClearFilters={clearFilters}
+        loading={loading}
+      />
+
+      <DataTable
+        data={positions}
+        columns={columns}
+        loading={loading}
+        error={error}
+        pagination={pagination}
+        className="data-table positions"
+        emptyMessage={t('noPositions', 'No positions found')}
+        onPageChange={goToPage}
+        onPreviousPage={goToPreviousPage}
+        onNextPage={goToNextPage}
+        onPageSizeChange={changePageSize}
+      />
     </div>
   );
 };

@@ -1,12 +1,33 @@
 import apiClient from './api';
-import { Team, TeamsResponse } from '../types';
+import { Team, ApiResponse } from '../types';
 
 export const teamsService = {
-  getAll: async (page: number = 1, pageSize: number = 10): Promise<TeamsResponse> => {
-    const response = await apiClient.get<TeamsResponse>('/teams', {
-      params: { page, pageSize }
-    });
-    return response.data;
+  getAll: async (
+    page: number = 1, 
+    pageSize: number = 10,
+    search: string = '',
+    filter: string = ''
+  ): Promise<ApiResponse<Team>> => {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        pageSize: pageSize.toString(),
+      });
+
+      if (filter && filter.trim()) {
+        params.append('filter', filter);
+      }
+
+      if (search && search.trim()) {
+        params.append('search', search);
+      }
+
+      const response = await apiClient.get<ApiResponse<Team>>(`/teams?${params}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching teams:', error);
+      throw new Error('Failed to fetch teams');
+    }
   },
 
   getById: async (id: string): Promise<Team> => {

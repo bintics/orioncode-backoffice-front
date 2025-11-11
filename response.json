@@ -19,5 +19,13 @@
         "pageSize": 10,
         "totalItems": 1,
         "totalPages": 1
+    },
+    "metadata": {
+        "filters": [
+            "firstName",
+            "lastName",
+            "position",
+            "team"
+        ]
     }
 }

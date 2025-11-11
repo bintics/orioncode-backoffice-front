@@ -1,12 +1,33 @@
 import apiClient from './api';
-import { Position, PositionsResponse } from '../types';
+import { Position, ApiResponse } from '../types';
 
 export const positionsService = {
-  getAll: async (page: number = 1, pageSize: number = 10): Promise<PositionsResponse> => {
-    const response = await apiClient.get<PositionsResponse>('/positions', {
-      params: { page, pageSize }
-    });
-    return response.data;
+  getAll: async (
+    page: number = 1, 
+    pageSize: number = 10,
+    search: string = '',
+    filter: string = ''
+  ): Promise<ApiResponse<Position>> => {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        pageSize: pageSize.toString(),
+      });
+
+      if (filter && filter.trim()) {
+        params.append('filter', filter);
+      }
+
+      if (search && search.trim()) {
+        params.append('search', search);
+      }
+
+      const response = await apiClient.get<ApiResponse<Position>>(`/positions?${params}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching positions:', error);
+      throw new Error('Failed to fetch positions');
+    }
   },
 
   getById: async (id: string): Promise<Position> => {
