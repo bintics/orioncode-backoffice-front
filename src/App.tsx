@@ -1,8 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { SidebarProvider, useSidebarContext } from './contexts/SidebarContext';
 import Navigation from './components/Navigation';
-import PositionsList from './pages/positions/PositionsList';
-import PositionForm from './pages/positions/PositionForm';
+import PositionsMicrofrontend from './pages/positions/PositionsMicrofrontend';
 import CollaboratorsList from './pages/collaborators/CollaboratorsList';
 import CollaboratorForm from './pages/collaborators/CollaboratorForm';
 import TeamsList from './pages/teams/TeamsList';
@@ -20,10 +19,8 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/positions" replace />} />
             
-            {/* Positions Routes */}
-            <Route path="/positions" element={<PositionsList />} />
-            <Route path="/positions/new" element={<PositionForm />} />
-            <Route path="/positions/edit/:id" element={<PositionForm />} />
+            {/* Positions Routes - Now handled by Microfrontend */}
+            <Route path="/positions/*" element={<PositionsMicrofrontend />} />
             
             {/* Collaborators Routes */}
             <Route path="/collaborators" element={<CollaboratorsList />} />

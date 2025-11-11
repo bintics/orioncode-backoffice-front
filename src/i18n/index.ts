@@ -27,6 +27,11 @@ const resources = {
       selectTeam: 'Select a team',
       description: 'Description',
       
+      // Microfrontend
+      poweredByMicrofrontend: 'Powered by Microfrontend',
+      microfrontendLoading: 'Loading microfrontend...',
+      microfrontendError: 'Error loading microfrontend',
+      
       // Search and Filter
       filterByField: 'Filter by field:',
       allFields: 'All fields',
@@ -103,6 +108,11 @@ const resources = {
       selectPosition: 'Seleccione un puesto',
       selectTeam: 'Seleccione un equipo',
       description: 'Descripción',
+      
+      // Microfrontend
+      poweredByMicrofrontend: 'Impulsado por Microfrontend',
+      microfrontendLoading: 'Cargando microfrontend...',
+      microfrontendError: 'Error cargando microfrontend',
       
       // Search and Filter
       filterByField: 'Filtrar por campo:',
