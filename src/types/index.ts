@@ -6,9 +6,15 @@ export interface PaginationInfo {
   totalPages: number;
 }
 
+export interface ApiMetadata {
+  filters?: string[];
+  [key: string]: any;
+}
+
 export interface ApiResponse<T> {
   data: T[];
   pagination: PaginationInfo;
+  metadata?: ApiMetadata;
 }
 
 // Position (Puesto)

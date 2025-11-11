@@ -2,13 +2,29 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { collaboratorsService } from '../../services/collaboratorsService';
 import { Collaborator } from '../../types';
-import { usePaginatedData } from '../../hooks/usePaginatedData';
+import { useFilteredPaginatedData } from '../../hooks/useFilteredPaginatedData';
 import DataTable from '../../components/DataTable';
+import { SearchAndFilter } from '../../components/SearchAndFilter';
 
 const CollaboratorsList = () => {
   const { t } = useTranslation();
 
-  const { data: collaborators, pagination, loading, error, reload, goToPage, goToNextPage, goToPreviousPage, changePageSize } = usePaginatedData({
+  const { 
+    data: collaborators, 
+    pagination, 
+    loading, 
+    error,
+    filter,
+    availableFilters,
+    setFilter,
+    clearFilters,
+    applyFilters,
+    reload, 
+    goToPage, 
+    goToNextPage, 
+    goToPreviousPage, 
+    changePageSize 
+  } = useFilteredPaginatedData({
     fetchFunction: collaboratorsService.getAll,
   });
 
@@ -101,6 +117,15 @@ const CollaboratorsList = () => {
           + {t('createCollaborator')}
         </Link>
       </div>
+
+      <SearchAndFilter
+        filter={filter}
+        availableFilters={availableFilters}
+        onFilterChange={setFilter}
+        onApplyFilters={applyFilters}
+        onClearFilters={clearFilters}
+        loading={loading}
+      />
 
       <DataTable
         data={collaborators}
