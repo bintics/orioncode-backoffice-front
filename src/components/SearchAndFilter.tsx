@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface SearchAndFilterProps {
   filterField: string;
@@ -21,6 +22,8 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   onClearFilters,
   loading = false,
 }) => {
+  const { t } = useTranslation();
+  
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       onApplyFilters();
@@ -33,7 +36,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
         {/* Filtro por campo específico */}
         <div className="filter-group">
           <label htmlFor="filter-field" className="filter-label">
-            Filtrar por campo:
+            {t('filterByField')}
           </label>
           <div className="filter-inputs">
             <select
@@ -43,7 +46,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
               className="filter-select"
               disabled={loading}
             >
-              <option value="">Todos los campos</option>
+              <option value="">{t('allFields')}</option>
               {availableFilters.map((filterName) => (
                 <option key={filterName} value={filterName}>
                   {filterName.charAt(0).toUpperCase() + filterName.slice(1)}
@@ -52,7 +55,7 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             </select>
             <input
               type="text"
-              placeholder={filterField ? `Valor para ${filterField.charAt(0).toUpperCase() + filterField.slice(1)}...` : "Buscar en todos los campos..."}
+              placeholder={filterField ? t('searchInField', { field: filterField.charAt(0).toUpperCase() + filterField.slice(1) }) : t('searchInAllFields')}
               value={searchValue}
               onChange={(e) => onSearchValueChange(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -69,14 +72,14 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             disabled={loading || !searchValue.trim()}
             className="apply-button"
           >
-            {loading ? 'Aplicando...' : 'Aplicar'}
+            {loading ? t('applying') : t('apply')}
           </button>
           <button
             onClick={onClearFilters}
             disabled={loading}
             className="clear-button"
           >
-            Limpiar
+            {t('clear')}
           </button>
         </div>
       </div>
@@ -84,9 +87,9 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
       {/* Indicador de filtros activos */}
       {searchValue && (
         <div className="active-filters">
-          <span className="active-filters-label">Filtro activo:</span>
+          <span className="active-filters-label">{t('activeFilter')}</span>
           <span className="active-filter-tag">
-            {filterField ? `${filterField}: "${searchValue}"` : `Todos los campos: "${searchValue}"`}
+            {filterField ? `${filterField}: "${searchValue}"` : `${t('allFields')}: "${searchValue}"`}
             <button 
               onClick={() => {
                 onFilterFieldChange('');

@@ -25,6 +25,17 @@ const resources = {
       selectOption: 'Select an option',
       selectPosition: 'Select a position',
       selectTeam: 'Select a team',
+      description: 'Description',
+      
+      // Search and Filter
+      filterByField: 'Filter by field:',
+      allFields: 'All fields',
+      searchInAllFields: 'Search in all fields...',
+      searchInField: 'Value for {{field}}...',
+      apply: 'Apply',
+      applying: 'Applying...',
+      clear: 'Clear',
+      activeFilter: 'Active filter:',
       
       // Positions
       positionName: 'Position Name',
@@ -46,6 +57,10 @@ const resources = {
       createCollaborator: 'Create Collaborator',
       editCollaborator: 'Edit Collaborator',
       collaboratorsList: 'Collaborators List',
+      personalInfo: 'Personal Information',
+      workInfo: 'Work Information',
+      enterFirstName: 'Enter first name',
+      enterLastName: 'Enter last name',
       
       // Teams
       teamId: 'Team ID',
@@ -53,6 +68,15 @@ const resources = {
       createTeam: 'Create Team',
       editTeam: 'Edit Team',
       teamsList: 'Teams List',
+      teamInfo: 'Team Information',
+      enterTeamName: 'Enter team name',
+      enterTag: 'Enter a tag',
+      add: 'Add',
+      
+      // Empty states
+      noPositions: 'No positions found',
+      noTeams: 'No teams found',
+      noCollaborators: 'No collaborators found',
     },
   },
   es: {
@@ -78,6 +102,17 @@ const resources = {
       selectOption: 'Seleccione una opción',
       selectPosition: 'Seleccione un puesto',
       selectTeam: 'Seleccione un equipo',
+      description: 'Descripción',
+      
+      // Search and Filter
+      filterByField: 'Filtrar por campo:',
+      allFields: 'Todos los campos',
+      searchInAllFields: 'Buscar en todos los campos...',
+      searchInField: 'Valor para {{field}}...',
+      apply: 'Aplicar',
+      applying: 'Aplicando...',
+      clear: 'Limpiar',
+      activeFilter: 'Filtro activo:',
       
       // Positions
       positionName: 'Nombre del Puesto',
@@ -99,6 +134,10 @@ const resources = {
       createCollaborator: 'Crear Colaborador',
       editCollaborator: 'Editar Colaborador',
       collaboratorsList: 'Lista de Colaboradores',
+      personalInfo: 'Información Personal',
+      workInfo: 'Información Laboral',
+      enterFirstName: 'Ingrese el nombre',
+      enterLastName: 'Ingrese el apellido',
       
       // Teams
       teamId: 'ID de Equipo',
@@ -106,6 +145,15 @@ const resources = {
       createTeam: 'Crear Equipo',
       editTeam: 'Editar Equipo',
       teamsList: 'Lista de Equipos',
+      teamInfo: 'Información del Equipo',
+      enterTeamName: 'Ingrese el nombre del equipo',
+      enterTag: 'Ingrese una etiqueta',
+      add: 'Agregar',
+      
+      // Empty states
+      noPositions: 'No se encontraron puestos',
+      noTeams: 'No se encontraron equipos',
+      noCollaborators: 'No se encontraron colaboradores',
     },
   },
 };
