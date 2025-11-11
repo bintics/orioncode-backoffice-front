@@ -395,22 +395,78 @@ try {
 
 ### Comandos estándar:
 ```bash
-nvm use 20          # Usar Node 20
-npm run dev         # Servidor de desarrollo
-npm run build       # Build para producción
-npm run lint        # Linter
+# IMPORTANTE: Siempre usar Node 20 antes de ejecutar npm
+nvm use 20 && npm run dev    # Comando completo para desarrollo
+nvm use 20 && npm run build  # Comando completo para build
+npm run lint                 # Linter
 ```
+
+### Notas importantes:
+- **SIEMPRE** usar `nvm use 20` antes de ejecutar comandos npm
+- La aplicación requiere Node.js v20 para compatibilidad con npm v10.9.1
+- Use el comando combinado `nvm use 20 && npm run dev` para evitar errores
 
 ### Estructura de archivos:
 ```
 src/
 ├── components/     # Componentes reutilizables
 ├── pages/         # Páginas por entidad
+│   ├── collaborators/
+│   │   ├── CollaboratorForm.tsx
+│   │   ├── CollaboratorsList.tsx
+│   │   └── useCollaboratorForm.ts    # Hook específico del formulario
+│   ├── teams/
+│   │   ├── TeamForm.tsx
+│   │   ├── TeamsList.tsx
+│   │   └── useTeamForm.ts           # Hook específico del formulario
+│   └── positions/
+│       ├── PositionForm.tsx
+│       ├── PositionsList.tsx
+│       └── usePositionForm.ts       # Hook específico del formulario
 ├── services/      # Servicios API
-├── hooks/         # Hooks personalizados
+├── hooks/         # Solo hooks REUTILIZABLES (usePaginatedData, etc.)
 ├── types/         # Tipos TypeScript
 ├── i18n/          # Configuración de idiomas
 └── contexts/      # Contextos React
+```
+
+## 🎯 Arquitectura de Hooks
+
+### Principios de organización:
+- **`src/hooks/`**: Solo hooks verdaderamente reutilizables entre múltiples componentes
+- **`src/pages/{module}/`**: Hooks específicos del módulo van junto a sus componentes
+- **Cohesión**: Los hooks específicos de un formulario quedan cerca del componente que los utiliza
+
+### Hooks reutilizables (src/hooks/):
+```typescript
+usePaginatedData()          // Genérico para paginación
+useFilteredPaginatedData()  // Genérico para filtros + paginación  
+useSidebar()               // Estado global del sidebar
+```
+
+### Hooks específicos (src/pages/{module}/):
+```typescript
+useCollaboratorForm()      // Lógica específica del formulario de colaboradores
+useTeamForm()             // Lógica específica del formulario de equipos
+usePositionForm()         // Lógica específica del formulario de posiciones
+```
+
+### Estructura estándar de hooks de formulario:
+```typescript
+interface UseEntityFormReturn {
+  // Form data
+  formData: EntityFormData;
+  
+  // States
+  loading: boolean;
+  error: string | null;
+  isEditing: boolean;
+  
+  // Handlers
+  handleSubmit: (e: React.FormEvent) => Promise<void>;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  handleCancel: () => void;
+}
 ```
 
 ## 🔄 Flujo de Trabajo

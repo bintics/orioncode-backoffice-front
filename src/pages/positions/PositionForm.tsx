@@ -1,72 +1,19 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { positionsService } from '../../services/positionsService';
-import { Position } from '../../types';
+import { usePositionForm } from './usePositionForm';
 
 const PositionForm = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-  const isEditing = Boolean(id);
-
-  const [formData, setFormData] = useState<Position>({
-    name: '',
-    description: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (id) {
-      loadPosition(id);
-    } else {
-      // Generate UUID for new position
-      setFormData((prev) => ({
-        ...prev,
-        id: crypto.randomUUID(),
-      }));
-    }
-  }, [id]);
-
-  const loadPosition = async (positionId: string) => {
-    try {
-      setLoading(true);
-      const data = await positionsService.getById(positionId);
-      setFormData(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      setLoading(true);
-      setError(null);
-
-      if (isEditing && id) {
-        await positionsService.update(id, formData);
-      } else {
-        await positionsService.create(formData);
-      }
-
-      navigate('/positions');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      setLoading(false);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  
+  const {
+    formData,
+    loading,
+    error,
+    isEditing,
+    handleSubmit,
+    handleChange,
+    handleTextAreaChange,
+    handleCancel,
+  } = usePositionForm();
 
   if (loading && isEditing) return <div className="loading">{t('loading')}</div>;
 
@@ -111,7 +58,7 @@ const PositionForm = () => {
               id="description"
               name="description"
               value={formData.description || ''}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={handleTextAreaChange}
               className="form-textarea"
               placeholder={t('enterDescription', 'Ingrese una descripción (opcional)')}
               rows={4}
@@ -130,7 +77,7 @@ const PositionForm = () => {
             <button
               type="button"
               className="btn-secondary"
-              onClick={() => navigate('/positions')}
+              onClick={handleCancel}
               disabled={loading}
             >
               {t('cancel', 'Cancelar')}

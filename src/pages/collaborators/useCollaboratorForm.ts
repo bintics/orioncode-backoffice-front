@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { collaboratorsService } from '../services/collaboratorsService';
-import { positionsService } from '../services/positionsService';
-import { teamsService } from '../services/teamsService';
-import { Position, Team, CreateCollaboratorRequest } from '../types';
+import { collaboratorsService } from '../../services/collaboratorsService';
+import { positionsService } from '../../services/positionsService';
+import { teamsService } from '../../services/teamsService';
+import { Position, Team, CreateCollaboratorRequest } from '../../types';
 
 interface CollaboratorFormData {
   firstName: string;

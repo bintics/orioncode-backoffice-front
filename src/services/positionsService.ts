@@ -1,5 +1,5 @@
 import apiClient from './api';
-import { Position, ApiResponse } from '../types';
+import { Position, ApiResponse, CreatePositionRequest, UpdatePositionRequest } from '../types';
 
 export const positionsService = {
   getAll: async (
@@ -35,12 +35,12 @@ export const positionsService = {
     return response.data;
   },
 
-  create: async (position: Omit<Position, 'id' | 'createdAt' | 'updatedAt'>): Promise<Position> => {
+  create: async (position: CreatePositionRequest): Promise<Position> => {
     const response = await apiClient.post<Position>('/positions', position);
     return response.data;
   },
 
-  update: async (id: string, position: Partial<Position>): Promise<Position> => {
+  update: async (id: string, position: UpdatePositionRequest): Promise<Position> => {
     const response = await apiClient.put<Position>(`/positions/${id}`, position);
     return response.data;
   },

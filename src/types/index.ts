@@ -27,6 +27,21 @@ export interface Position {
   updatedAt?: string;
 }
 
+// Tipo específico para crear posiciones (enviar al backend)
+export interface CreatePositionRequest {
+  id: string;
+  name: string;
+  description?: string;
+  tags?: string[];
+}
+
+// Tipo específico para actualizar posiciones
+export interface UpdatePositionRequest {
+  name?: string;
+  description?: string;
+  tags?: string[];
+}
+
 // Team (Equipo de Desarrollo)
 export interface Team {
   id: string;
