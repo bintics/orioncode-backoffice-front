@@ -1,10 +1,33 @@
 import apiClient from './api';
-import { Position } from '../types';
+import { Position, ApiResponse } from '../types';
 
 export const positionsService = {
-  getAll: async (): Promise<Position[]> => {
-    const response = await apiClient.get<Position[]>('/positions');
-    return response.data;
+  getAll: async (
+    page: number = 1, 
+    pageSize: number = 10,
+    search: string = '',
+    filter: string = ''
+  ): Promise<ApiResponse<Position>> => {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        pageSize: pageSize.toString(),
+      });
+
+      if (filter && filter.trim()) {
+        params.append('filter', filter);
+      }
+
+      if (search && search.trim()) {
+        params.append('search', search);
+      }
+
+      const response = await apiClient.get<ApiResponse<Position>>(`/positions?${params}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching positions:', error);
+      throw new Error('Failed to fetch positions');
+    }
   },
 
   getById: async (id: string): Promise<Position> => {
@@ -12,12 +35,12 @@ export const positionsService = {
     return response.data;
   },
 
-  create: async (position: Position): Promise<Position> => {
+  create: async (position: Omit<Position, 'id' | 'createdAt' | 'updatedAt'>): Promise<Position> => {
     const response = await apiClient.post<Position>('/positions', position);
     return response.data;
   },
 
-  update: async (id: string, position: Position): Promise<Position> => {
+  update: async (id: string, position: Partial<Position>): Promise<Position> => {
     const response = await apiClient.put<Position>(`/positions/${id}`, position);
     return response.data;
   },

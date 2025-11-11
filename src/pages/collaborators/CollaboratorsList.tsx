@@ -1,41 +1,34 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { collaboratorsService } from '../../services/collaboratorsService';
-import { positionsService } from '../../services/positionsService';
-import { teamsService } from '../../services/teamsService';
-import { Collaborator, Position, Team } from '../../types';
+import { Collaborator } from '../../types';
+import { useFilteredPaginatedData } from '../../hooks/useFilteredPaginatedData';
+import DataTable from '../../components/DataTable';
+import { SearchAndFilter } from '../../components/SearchAndFilter';
 
 const CollaboratorsList = () => {
   const { t } = useTranslation();
-  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
-  const [positions, setPositions] = useState<Position[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const [collabData, posData, teamData] = await Promise.all([
-        collaboratorsService.getAll(),
-        positionsService.getAll(),
-        teamsService.getAll(),
-      ]);
-      setCollaborators(collabData);
-      setPositions(posData);
-      setTeams(teamData);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { 
+    data: collaborators, 
+    pagination, 
+    loading, 
+    error,
+    filterField,
+    searchValue,
+    availableFilters,
+    setFilterField,
+    setSearchValue,
+    clearFilters,
+    applyFilters,
+    reload, 
+    goToPage, 
+    goToNextPage, 
+    goToPreviousPage, 
+    changePageSize 
+  } = useFilteredPaginatedData({
+    fetchFunction: collaboratorsService.getAll,
+  });
 
   const handleDelete = async (id: string) => {
     if (!window.confirm(t('confirmDelete'))) {
@@ -44,78 +37,113 @@ const CollaboratorsList = () => {
 
     try {
       await collaboratorsService.delete(id);
-      await loadData();
+      await reload();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Error deleting collaborator:', err);
     }
   };
 
-  const getPositionName = (positionId: string) => {
-    return positions.find((p) => p.id === positionId)?.name || positionId;
-  };
-
-  const getTeamName = (teamId: string) => {
-    return teams.find((t) => t.id === teamId)?.name || teamId;
-  };
-
-  if (loading) return <div className="loading">{t('loading')}</div>;
-  if (error) return <div className="error">{t('error')}: {error}</div>;
+  const columns = [
+    {
+      key: 'id',
+      header: t('collaboratorId'),
+      render: (collaborator: Collaborator) => (
+        <span className="id-cell" title={collaborator?.id}>
+          {collaborator?.id}
+        </span>
+      ),
+      width: '180px',
+    },
+    {
+      key: 'firstName',
+      header: t('firstName'),
+      render: (collaborator: Collaborator) => collaborator?.firstName || '',
+    },
+    {
+      key: 'lastName',
+      header: t('lastName'),
+      render: (collaborator: Collaborator) => collaborator?.lastName || '',
+    },
+    {
+      key: 'position',
+      header: t('position'),
+      render: (collaborator: Collaborator) => collaborator?.position || '',
+      width: '150px',
+    },
+    {
+      key: 'team',
+      header: t('team'),
+      render: (collaborator: Collaborator) => collaborator?.team?.name || '',
+      width: '150px',
+    },
+    {
+      key: 'tags',
+      header: t('tags'),
+      render: (collaborator: Collaborator) => (
+        <div className="tags">
+          {Array.isArray(collaborator?.tags) && collaborator.tags.map((tag, index) => (
+            <span key={index} className="tag">
+              {tag}
+            </span>
+          ))}
+        </div>
+      ),
+      width: '150px',
+    },
+    {
+      key: 'actions',
+      header: t('actions'),
+      render: (collaborator: Collaborator) => (
+        <div className="btn-group">
+          <Link to={`/collaborators/edit/${collaborator?.id}`} className="btn-secondary">
+            {t('edit')}
+          </Link>
+          <button
+            className="btn-danger"
+            onClick={() => collaborator?.id && handleDelete(collaborator.id)}
+          >
+            {t('delete')}
+          </button>
+        </div>
+      ),
+      width: '200px',
+      className: 'text-right',
+    },
+  ];
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h1>{t('collaboratorsList')}</h1>
-        <Link to="/collaborators/new">
-          <button className="btn-primary">{t('createCollaborator')}</button>
+        <h1 className="page-title">{t('collaboratorsList')}</h1>
+        <Link to="/collaborators/new" className="btn-primary">
+          + {t('createCollaborator')}
         </Link>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>{t('collaboratorId')}</th>
-            <th>{t('firstName')}</th>
-            <th>{t('lastName')}</th>
-            <th>{t('position')}</th>
-            <th>{t('team')}</th>
-            <th>{t('tags')}</th>
-            <th>{t('actions')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {collaborators.map((collaborator) => (
-            <tr key={collaborator.id}>
-              <td>{collaborator.id}</td>
-              <td>{collaborator.firstName}</td>
-              <td>{collaborator.lastName}</td>
-              <td>{getPositionName(collaborator.positionId)}</td>
-              <td>{getTeamName(collaborator.teamId)}</td>
-              <td>
-                <div className="tags">
-                  {collaborator.tags.map((tag, index) => (
-                    <span key={index} className="tag">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </td>
-              <td>
-                <div className="btn-group">
-                  <Link to={`/collaborators/edit/${collaborator.id}`}>
-                    <button className="btn-secondary btn-small">{t('edit')}</button>
-                  </Link>
-                  <button
-                    className="btn-danger btn-small"
-                    onClick={() => handleDelete(collaborator.id)}
-                  >
-                    {t('delete')}
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <SearchAndFilter
+        filterField={filterField}
+        searchValue={searchValue}
+        availableFilters={availableFilters}
+        onFilterFieldChange={setFilterField}
+        onSearchValueChange={setSearchValue}
+        onApplyFilters={applyFilters}
+        onClearFilters={clearFilters}
+        loading={loading}
+      />
+
+      <DataTable
+        data={collaborators}
+        columns={columns}
+        loading={loading}
+        error={error}
+        pagination={pagination}
+        className="data-table collaborators"
+        emptyMessage={t('noCollaborators', 'No collaborators found')}
+        onPageChange={goToPage}
+        onPreviousPage={goToPreviousPage}
+        onNextPage={goToNextPage}
+        onPageSizeChange={changePageSize}
+      />
     </div>
   );
 };

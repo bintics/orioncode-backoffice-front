@@ -2,31 +2,13 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { positionsService } from '../../services/positionsService';
 import { Position } from '../../types';
-import { useFilteredPaginatedData } from '../../hooks/useFilteredPaginatedData';
+import { usePaginatedData } from '../../hooks/usePaginatedData';
 import DataTable from '../../components/DataTable';
-import { SearchAndFilter } from '../../components/SearchAndFilter';
 
 const PositionsList = () => {
   const { t } = useTranslation();
 
-  const { 
-    data: positions, 
-    pagination, 
-    loading, 
-    error,
-    filterField,
-    searchValue,
-    availableFilters,
-    setFilterField,
-    setSearchValue,
-    clearFilters,
-    applyFilters,
-    reload, 
-    goToPage, 
-    goToNextPage, 
-    goToPreviousPage, 
-    changePageSize 
-  } = useFilteredPaginatedData({
+  const { data: positions, pagination, loading, error, reload } = usePaginatedData({
     fetchFunction: positionsService.getAll,
   });
 
@@ -56,15 +38,27 @@ const PositionsList = () => {
     },
     {
       key: 'name',
-      header: t('positionName'),
-      withd: '300px',
+      header: t('name'),
       render: (position: Position) => position?.name || '',
     },
     {
       key: 'description',
       header: t('description'),
-      width: '500px',
       render: (position: Position) => position?.description || '',
+    },
+    {
+      key: 'tags',
+      header: t('tags'),
+      render: (position: Position) => (
+        <div className="tags">
+          {Array.isArray(position?.tags) && position.tags.map((tag, index) => (
+            <span key={index} className="tag">
+              {tag}
+            </span>
+          ))}
+        </div>
+      ),
+      width: '150px',
     },
     {
       key: 'actions',
@@ -96,17 +90,6 @@ const PositionsList = () => {
         </Link>
       </div>
 
-      <SearchAndFilter
-        filterField={filterField}
-        searchValue={searchValue}
-        availableFilters={availableFilters}
-        onFilterFieldChange={setFilterField}
-        onSearchValueChange={setSearchValue}
-        onApplyFilters={applyFilters}
-        onClearFilters={clearFilters}
-        loading={loading}
-      />
-
       <DataTable
         data={positions}
         columns={columns}
@@ -115,10 +98,7 @@ const PositionsList = () => {
         pagination={pagination}
         className="data-table positions"
         emptyMessage={t('noPositions', 'No positions found')}
-        onPageChange={goToPage}
-        onPreviousPage={goToPreviousPage}
-        onNextPage={goToNextPage}
-        onPageSizeChange={changePageSize}
+        itemName="positions"
       />
     </div>
   );
