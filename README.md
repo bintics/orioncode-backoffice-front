@@ -110,6 +110,58 @@ The application connects to a REST API with the following endpoints:
 - `PUT /api/teams/:id` - Update team
 - `DELETE /api/teams/:id` - Delete team
 
+## Backend for Frontend (BFF) Layer
+
+This project includes a **Backend for Frontend (BFF)** pattern implementation to optimize API calls and provide data structures that perfectly match the front-end component needs.
+
+### What is BFF?
+
+Instead of making multiple API calls to different endpoints, the BFF layer combines them into a single optimized request:
+
+```typescript
+// OLD WAY - 3 separate requests
+const positions = await positionsService.getAllForDropdown();
+const teams = await teamsService.getAllForDropdown();
+const collaborator = await collaboratorsService.getById(id);
+
+// NEW WAY - 1 BFF request
+const formData = await collaboratorsBFFService.getFormData(id);
+// Returns: { collaborator, positions, teams }
+```
+
+### BFF Endpoints
+
+The BFF layer provides optimized endpoints that combine multiple backend calls:
+
+#### Collaborators BFF
+- `GET /api/bff/collaborators/form-data` - Get all data for creating a new collaborator (positions + teams)
+- `GET /api/bff/collaborators/:id/form-data` - Get all data for editing a collaborator (collaborator + positions + teams)
+- `POST /api/bff/collaborators` - Create new collaborator
+- `PUT /api/bff/collaborators/:id` - Update collaborator
+- `DELETE /api/bff/collaborators/:id` - Delete collaborator
+
+### Benefits
+
+✅ **Performance**: 1 request instead of 3
+✅ **Reduced Latency**: Parallel backend calls on the server
+✅ **Simpler Code**: Single loading state, single error handler
+✅ **Type Safety**: Strong TypeScript types for combined responses
+
+### Documentation
+
+- **[BFF_GUIDE.md](./BFF_GUIDE.md)** - Complete guide on using the BFF pattern in this project
+- **[BFF_BACKEND_EXAMPLE.md](./BFF_BACKEND_EXAMPLE.md)** - Backend implementation example with Express.js
+
+### Configuration
+
+Configure the BFF endpoint in your `.env` file:
+
+```bash
+# Optional: Override BFF base URL
+# If not set, defaults to ${VITE_API_BASE_URL}/bff
+VITE_BFF_BASE_URL=/api/bff
+```
+
 ## Technology Stack
 
 - **React 18** - UI library
@@ -134,9 +186,17 @@ src/
 │   ├── api.ts
 │   ├── positionsService.ts
 │   ├── collaboratorsService.ts
-│   └── teamsService.ts
+│   ├── teamsService.ts
+│   └── bff/         # Backend for Frontend services
+│       ├── index.ts
+│       ├── bffApi.ts
+│       └── collaboratorsBFF.ts
 ├── types/            # TypeScript type definitions
-│   └── index.ts
+│   ├── index.ts
+│   └── bff.ts       # BFF-specific types
+├── hooks/            # Custom React hooks
+│   ├── useBFFCollaboratorForm.ts  # BFF-optimized hook
+│   └── ...
 ├── i18n/             # Internationalization config
 │   └── index.ts
 ├── App.tsx           # Main application component
