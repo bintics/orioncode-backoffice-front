@@ -5,7 +5,7 @@
  * and the new BFF approach (single optimized API call)
  */
 
-import { useBFFCollaboratorForm } from './src/hooks/useBFFCollaboratorForm';
+import { useBFFCollaboratorForm } from './src/bff';
 import { useTranslation } from 'react-i18next';
 
 // ============================================================================
@@ -210,7 +210,7 @@ BENEFITS:
 /*
 Step 1: Replace the hook import
   OLD: import { useCollaboratorForm } from './useCollaboratorForm';
-  NEW: import { useBFFCollaboratorForm } from '../hooks/useBFFCollaboratorForm';
+  NEW: import { useBFFCollaboratorForm } from '../bff';
 
 Step 2: Replace the hook usage
   OLD: const { ... } = useCollaboratorForm();

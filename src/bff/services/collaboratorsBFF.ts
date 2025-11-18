@@ -1,5 +1,5 @@
 import bffApiClient from './bffApi';
-import { CollaboratorBFFResponse, CollaboratorListBFFResponse, CollaboratorBFFRequest } from '../../types/bff';
+import { CollaboratorBFFResponse, CollaboratorListBFFResponse, CollaboratorBFFRequest } from '../types/bff';
 import { Collaborator } from '../../types';
 
 /**

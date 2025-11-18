@@ -182,20 +182,24 @@ src/
 │   ├── positions/
 │   ├── collaborators/
 │   └── teams/
+├── bff/              # Backend for Frontend (all BFF code)
+│   ├── services/
+│   │   ├── index.ts
+│   │   ├── bffApi.ts
+│   │   └── collaboratorsBFF.ts
+│   ├── hooks/
+│   │   └── useBFFCollaboratorForm.ts
+│   ├── types/
+│   │   └── bff.ts
+│   └── index.ts     # Main BFF exports
 ├── services/         # API service layer
 │   ├── api.ts
 │   ├── positionsService.ts
 │   ├── collaboratorsService.ts
-│   ├── teamsService.ts
-│   └── bff/         # Backend for Frontend services
-│       ├── index.ts
-│       ├── bffApi.ts
-│       └── collaboratorsBFF.ts
+│   └── teamsService.ts
 ├── types/            # TypeScript type definitions
-│   ├── index.ts
-│   └── bff.ts       # BFF-specific types
+│   └── index.ts
 ├── hooks/            # Custom React hooks
-│   ├── useBFFCollaboratorForm.ts  # BFF-optimized hook
 │   └── ...
 ├── i18n/             # Internationalization config
 │   └── index.ts

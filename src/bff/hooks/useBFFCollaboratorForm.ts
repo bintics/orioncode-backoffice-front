@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { collaboratorsBFFService } from '../services/bff';
-import { Position, Team } from '../types';
+import { collaboratorsBFFService } from '../services';
+import { Position, Team } from '../../types';
 
 interface CollaboratorFormData {
   firstName: string;

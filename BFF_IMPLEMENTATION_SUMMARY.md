@@ -16,22 +16,27 @@ A complete BFF layer implementation that reduces multiple API calls into single 
 
 ## What Was Implemented
 
-### 1. BFF Services Layer (`src/services/bff/`)
+### 1. BFF Module (`src/bff/`)
+
+All BFF-related code is organized in one place to avoid confusion between front-end and BFF code.
 
 #### Files Created:
-- **`bffApi.ts`** - BFF API client with configurable base URL
-- **`collaboratorsBFF.ts`** - Collaborators BFF service with methods:
+- **`services/bffApi.ts`** - BFF API client with configurable base URL
+- **`services/collaboratorsBFF.ts`** - Collaborators BFF service with methods:
   - `getFormData(id?)` - Get collaborator + positions + teams in one call
   - `getList()` - Get paginated collaborators list
   - `create()` - Create collaborator
   - `update()` - Update collaborator
   - `delete()` - Delete collaborator
-- **`index.ts`** - Clean exports for easy imports
+- **`services/index.ts`** - Service exports
+- **`hooks/useBFFCollaboratorForm.ts`** - Custom hook for BFF usage
+- **`types/bff.ts`** - BFF-specific types
+- **`index.ts`** - Main BFF module exports
 
-### 2. TypeScript Types (`src/types/`)
+### 2. TypeScript Types
 
-#### Files Created/Modified:
-- **`bff.ts`** (new) - BFF-specific types:
+#### Files Modified:
+- **`src/types/index.ts`** (modified) - Fixed Collaborator type:
   ```typescript
   CollaboratorBFFResponse {
     collaborator: Collaborator | null;
@@ -43,17 +48,7 @@ A complete BFF layer implementation that reduces multiple API calls into single 
   - Changed `position: string` to `position: { id: string; name: string; }`
   - Now matches the structure used in the codebase
 
-### 3. Custom React Hook (`src/hooks/`)
-
-#### Files Created:
-- **`useBFFCollaboratorForm.ts`** - Optimized hook that:
-  - Loads all form data in a single BFF request
-  - Manages form state
-  - Handles validation
-  - Provides submission handlers
-  - Simplifies component code
-
-### 4. Comprehensive Documentation
+### 3. Comprehensive Documentation
 
 #### Files Created:
 
@@ -207,7 +202,7 @@ The implementation provides a **gradual migration path**:
 
 1. Import the BFF hook:
    ```typescript
-   import { useBFFCollaboratorForm } from '../hooks/useBFFCollaboratorForm';
+   import { useBFFCollaboratorForm } from '../bff';
    ```
 
 2. Use in component:
@@ -248,16 +243,17 @@ Key endpoints to implement:
 
 ## Files Summary
 
-### New Files (9)
-1. `src/services/bff/bffApi.ts`
-2. `src/services/bff/collaboratorsBFF.ts`
-3. `src/services/bff/index.ts`
-4. `src/types/bff.ts`
-5. `src/hooks/useBFFCollaboratorForm.ts`
-6. `BFF_GUIDE.md`
-7. `BFF_BACKEND_EXAMPLE.md`
-8. `EXAMPLE_BFF_Usage.tsx`
-9. `BFF_IMPLEMENTATION_SUMMARY.md` (this file)
+### New Files (10)
+1. `src/bff/services/bffApi.ts`
+2. `src/bff/services/collaboratorsBFF.ts`
+3. `src/bff/services/index.ts`
+4. `src/bff/hooks/useBFFCollaboratorForm.ts`
+5. `src/bff/types/bff.ts`
+6. `src/bff/index.ts`
+7. `BFF_GUIDE.md`
+8. `BFF_BACKEND_EXAMPLE.md`
+9. `EXAMPLE_BFF_Usage.tsx`
+10. `BFF_IMPLEMENTATION_SUMMARY.md` (this file)
 
 ### Modified Files (3)
 1. `.env.example` - Added BFF configuration

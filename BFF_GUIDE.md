@@ -63,20 +63,24 @@ const formData = await collaboratorsBFFService.getFormData(id);
 
 ```
 src/
-├── services/
-│   ├── bff/                        # BFF layer services
+├── bff/                            # All BFF code in one place
+│   ├── services/
 │   │   ├── index.ts               # Exports all BFF services
 │   │   ├── bffApi.ts              # BFF API client configuration
 │   │   └── collaboratorsBFF.ts    # Collaborators BFF service
+│   ├── hooks/
+│   │   └── useBFFCollaboratorForm.ts  # Hook using BFF
+│   ├── types/
+│   │   └── bff.ts                 # BFF-specific types
+│   └── index.ts                   # Main BFF exports
+├── services/
 │   ├── api.ts                      # Original API client
 │   ├── collaboratorsService.ts     # Original services (still available)
 │   ├── positionsService.ts
 │   └── teamsService.ts
 ├── types/
-│   ├── index.ts                    # Original types
-│   └── bff.ts                      # BFF-specific types
+│   └── index.ts                    # Original types
 └── hooks/
-    ├── useBFFCollaboratorForm.ts   # Hook using BFF
     └── useCollaboratorForm.ts      # Original hook (still available)
 ```
 
@@ -92,7 +96,7 @@ VITE_BFF_BASE_URL=/api/bff
 
 ### Types
 
-BFF types are defined in `src/types/bff.ts`:
+BFF types are defined in `src/bff/types/bff.ts`:
 
 ```typescript
 export interface CollaboratorBFFResponse {
@@ -104,10 +108,10 @@ export interface CollaboratorBFFResponse {
 
 ### Services
 
-BFF services are in `src/services/bff/`:
+BFF services are in `src/bff/services/`:
 
 ```typescript
-import { collaboratorsBFFService } from '../services/bff';
+import { collaboratorsBFFService } from '../bff';
 
 // Get all form data in one call
 const data = await collaboratorsBFFService.getFormData(id);
@@ -124,7 +128,7 @@ await collaboratorsBFFService.update(id, formData);
 Use the BFF hook for simplified form management:
 
 ```typescript
-import { useBFFCollaboratorForm } from '../hooks/useBFFCollaboratorForm';
+import { useBFFCollaboratorForm } from '../bff';
 
 const MyComponent = () => {
   const {
@@ -152,7 +156,7 @@ Both the original services and BFF services are available. This allows gradual m
 import { useCollaboratorForm } from './useCollaboratorForm';
 
 // New BFF approach
-import { useBFFCollaboratorForm } from '../hooks/useBFFCollaboratorForm';
+import { useBFFCollaboratorForm } from '../bff';
 ```
 
 ### Step 2: Update Components
@@ -321,9 +325,9 @@ app.get('/api/bff/collaborators/:id/form-data', async (req, res) => {
 ### Frontend Unit Tests
 
 ```typescript
-import { collaboratorsBFFService } from '../services/bff';
+import { collaboratorsBFFService } from '../bff';
 
-jest.mock('../services/bff/bffApi');
+jest.mock('../bff/services/bffApi');
 
 test('getFormData returns combined data', async () => {
   const mockData = {

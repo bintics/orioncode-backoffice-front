@@ -22,7 +22,7 @@ const data = await bff.get('/collaborators/123/form-data');
 ### Step 1: Import the Hook
 
 ```typescript
-import { useBFFCollaboratorForm } from '../hooks/useBFFCollaboratorForm';
+import { useBFFCollaboratorForm } from '../bff';
 ```
 
 ### Step 2: Use in Component
@@ -126,14 +126,16 @@ If not set, defaults to: `${VITE_API_BASE_URL}/bff`
 
 ```
 src/
-├── services/bff/
-│   ├── bffApi.ts              # BFF API client
-│   ├── collaboratorsBFF.ts    # BFF service
-│   └── index.ts               # Exports
-├── hooks/
-│   └── useBFFCollaboratorForm.ts  # BFF hook
-└── types/
-    └── bff.ts                 # BFF types
+└── bff/                       # All BFF code in one place
+    ├── services/
+    │   ├── bffApi.ts          # BFF API client
+    │   ├── collaboratorsBFF.ts # BFF service
+    │   └── index.ts           # Service exports
+    ├── hooks/
+    │   └── useBFFCollaboratorForm.ts  # BFF hook
+    ├── types/
+    │   └── bff.ts             # BFF types
+    └── index.ts               # Main BFF exports
 ```
 
 ## Before vs After Comparison

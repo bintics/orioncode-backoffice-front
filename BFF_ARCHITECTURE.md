@@ -242,7 +242,7 @@ User clicks "Edit" on collaborator 123
 │                     Type Definitions                     │
 └──────────────────────────────────────────────────────────┘
 
-src/types/index.ts                  src/types/bff.ts
+src/types/index.ts                  src/bff/types/bff.ts
 ├─ Position                         ├─ CollaboratorBFFResponse
 ├─ Team                             │  ├─ collaborator: Collaborator | null
 ├─ Collaborator                     │  ├─ positions: Position[]
