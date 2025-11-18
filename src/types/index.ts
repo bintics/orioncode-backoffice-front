@@ -72,7 +72,10 @@ export interface Collaborator {
   id: string;
   firstName: string;
   lastName: string;
-  position: string;
+  position: {
+    id: string;
+    name: string;
+  };
   team: {
     id: string;
     name: string;
