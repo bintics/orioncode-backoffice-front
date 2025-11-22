@@ -9,7 +9,7 @@ import { Position, Team, CreateCollaboratorRequest } from '../../types';
 interface CollaboratorFormData {
   firstName: string;
   lastName: string;
-  position: string; // Este será el positionId
+  positionId: string; // Este será el positionId
   teamId: string;
   tags: string[];
 }
@@ -49,7 +49,7 @@ export const useCollaboratorForm = (): UseCollaboratorFormReturn => {
   const [formData, setFormData] = useState<CollaboratorFormData>({
     firstName: '',
     lastName: '',
-    position: '',
+    positionId: '',
     teamId: '',
     tags: [],
   });
@@ -91,7 +91,6 @@ export const useCollaboratorForm = (): UseCollaboratorFormReturn => {
 
   const loadReferences = async () => {
     if (referencesLoaded || isLoadingRef.current) {
-      console.log('🔄 Skipping reference load (already loaded or loading)');
       return;
     }
     
@@ -103,7 +102,7 @@ export const useCollaboratorForm = (): UseCollaboratorFormReturn => {
       const teamData = await teamsService.getAllForDropdown();
       
       setPositions(posData || []);
-      setTeams(teamData.data || []);
+      setTeams(teamData || []);
       setReferencesLoaded(true);
       
     } catch (err) {
@@ -116,36 +115,32 @@ export const useCollaboratorForm = (): UseCollaboratorFormReturn => {
 
   const loadCollaborator = async (collaboratorId: string) => {
     if (isLoadingRef.current) {
-      console.log('🔄 Skipping collaborator load (already loading)');
       return; // Evitar múltiples cargas simultáneas
     }
     
     try {
       isLoadingRef.current = true;
       setLoading(true);
-      console.log('🔄 Loading collaborator...');
       
       const data = await collaboratorsService.getById(collaboratorId);
       
       console.log('🔍 Raw collaborator data:', data);
-      console.log('🔍 Available positions:', positions.map(p => ({ id: p.id, name: p.name })));
-      console.log('🔍 Available teams:', teams.map(t => ({ id: t.id, name: t.name })));
       
       // Find position ID by position name
-      const position = positions.find(p => p.id === data.position.id);
+      const position = positions.find(p => p.id === data.positionId);
       const positionId = position?.id || '';
       
       // Find team by team id (data.team.id should match)
-      const team = teams.find(t => t.id === data.team.id);
-      const teamId = team?.id || data.team.id; // Fallback to original ID
+      const team = teams.find(t => t.id === data.teamId);
+      const teamId = team?.id || data.teamId; // Fallback to original ID
       
       console.log('🔍 Position mapping:', {
-        searchingFor: data.position,
+        searchingFor: data.positionId,
         found: position,
         resultId: positionId
       });
       console.log('🔍 Team mapping:', {
-        searchingFor: data.team.id,
+        searchingFor: data.teamId,
         found: team,
         resultId: teamId
       });
@@ -153,7 +148,7 @@ export const useCollaboratorForm = (): UseCollaboratorFormReturn => {
       const newFormData = {
         firstName: data.firstName,
         lastName: data.lastName,
-        position: positionId, // Store position ID
+        positionId: positionId, // Store position ID
         teamId: teamId,
         tags: data.tags,
       };
@@ -173,6 +168,8 @@ export const useCollaboratorForm = (): UseCollaboratorFormReturn => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log('🚀 Submitting form with data:', formData);
     
     try {
       setLoading(true);
@@ -185,7 +182,7 @@ export const useCollaboratorForm = (): UseCollaboratorFormReturn => {
       if (!formData.lastName.trim()) {
         throw new Error('Last name is required');
       }
-      if (!formData.position.trim()) {
+      if (!formData.positionId.trim()) {
         throw new Error('Position is required');
       }
       if (!formData.teamId.trim()) {
@@ -193,7 +190,7 @@ export const useCollaboratorForm = (): UseCollaboratorFormReturn => {
       }
 
       // Find selected position and team
-      const selectedPosition = positions.find(p => p.id === formData.position);
+      const selectedPosition = positions.find(p => p.id === formData.positionId);
       const selectedTeam = teams.find(t => t.id === formData.teamId);
       
       if (!selectedPosition) {
@@ -208,7 +205,7 @@ export const useCollaboratorForm = (): UseCollaboratorFormReturn => {
         id: uuidv4(), // Generate UUID for collaborator
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
-        positionId: formData.position, // Send position ID
+        positionId: formData.positionId, // Send position ID
         teamId: formData.teamId, // Send team ID directly
         tags: formData.tags.filter(tag => tag.trim() !== ''), // Filter empty tags
       };

@@ -33,16 +33,13 @@ export const positionsService = {
   // Función específica para obtener posiciones para dropdowns
   getAllForDropdown: async (): Promise<Position[]> => {
     try {
-      console.log('🔄 Making request to /positions with X-dropdown header...');
       const response = await apiClient.get<Position[]>('/positions', {
         headers: {
           'X-dropdown': 'true'
         }
       });
-      console.log('✅ Positions response received:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Error fetching positions for dropdown:', error);
       throw new Error('Failed to fetch positions for dropdown');
     }
   },

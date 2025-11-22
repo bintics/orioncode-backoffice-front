@@ -72,11 +72,8 @@ export interface Collaborator {
   id: string;
   firstName: string;
   lastName: string;
-  position: string;
-  team: {
-    id: string;
-    name: string;
-  };
+  positionId: string;
+  teamId: string;
   tags: string[];
   createdAt: string;
   updatedAt: string;

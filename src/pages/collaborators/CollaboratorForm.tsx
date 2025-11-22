@@ -108,13 +108,13 @@ const CollaboratorForm = () => {
 
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
               <div className="form-group">
-                <label htmlFor="position" className="form-label">
+                <label htmlFor="positionId" className="form-label">
                   {t('position')} <span className="required">*</span>
                 </label>
                 <select
-                  id="position"
-                  name="position"
-                  value={formData.position}
+                  id="positionId"
+                  name="positionId"
+                  value={formData.positionId}
                   onChange={handleChange}
                   className="form-select"
                   required
