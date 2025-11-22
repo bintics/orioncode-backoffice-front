@@ -67,13 +67,13 @@ const CollaboratorsList = () => {
     {
       key: 'position',
       header: t('position'),
-      render: (collaborator: Collaborator) => collaborator?.position || '',
+      render: (collaborator: Collaborator) => collaborator?.positionId || '',
       width: '150px',
     },
     {
       key: 'team',
       header: t('team'),
-      render: (collaborator: Collaborator) => collaborator?.team?.name || '',
+      render: (collaborator: Collaborator) => collaborator?.teamId || '',
       width: '150px',
     },
     {
