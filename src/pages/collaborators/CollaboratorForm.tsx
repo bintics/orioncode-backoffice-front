@@ -216,7 +216,7 @@ const CollaboratorForm = () => {
             <button 
               type="submit" 
               className="btn-primary" 
-              disabled={loading || !formData.firstName.trim() || !formData.lastName.trim() || !formData.position || !formData.teamId}
+              disabled={loading || !formData.firstName.trim() || !formData.lastName.trim() || !formData.positionId || !formData.teamId}
             >
               {loading ? t('saving', 'Guardando...') : t('save', 'Guardar')}
             </button>
