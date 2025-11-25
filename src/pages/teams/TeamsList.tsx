@@ -66,20 +66,6 @@ const TeamsList = () => {
       render: (team: Team) => team?.description || '',
     },
     {
-      key: 'tags',
-      header: t('tags'),
-      render: (team: Team) => (
-        <div className="tags">
-          {Array.isArray(team?.tags) && team.tags.map((tag, index) => (
-            <span key={index} className="tag">
-              {tag}
-            </span>
-          ))}
-        </div>
-      ),
-      width: '150px',
-    },
-    {
       key: 'actions',
       header: t('actions'),
       render: (team: Team) => (

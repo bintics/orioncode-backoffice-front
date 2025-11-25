@@ -6,7 +6,7 @@ import { CreateTeamRequest } from '../../types';
 
 interface TeamFormData {
   name: string;
-  tags: string[];
+  description: string;
 }
 
 interface UseTeamFormReturn {
@@ -29,6 +29,7 @@ interface UseTeamFormReturn {
   handleAddTag: () => void;
   handleRemoveTag: (tagToRemove: string) => void;
   handleKeyPress: (e: React.KeyboardEvent) => void;
+  handleTextAreaChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleCancel: () => void;
 }
 
@@ -39,7 +40,7 @@ export const useTeamForm = (): UseTeamFormReturn => {
 
   const [formData, setFormData] = useState<TeamFormData>({
     name: '',
-    tags: [],
+    description: '',
   });
   
   const [newTag, setNewTag] = useState('');
@@ -56,9 +57,10 @@ export const useTeamForm = (): UseTeamFormReturn => {
     try {
       setLoading(true);
       const response = await teamsService.getById(teamId);
+      console.log('Loaded team data:', response);
       setFormData({
         name: response.name,
-        tags: response.tags,
+        description: response.description || '',
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error loading team');
@@ -83,7 +85,7 @@ export const useTeamForm = (): UseTeamFormReturn => {
       const apiData: CreateTeamRequest = {
         id: uuidv4(), // Generate UUID for team
         name: formData.name.trim(),
-        tags: formData.tags.filter(tag => tag.trim() !== ''), // Filter empty tags
+        description: formData.description.trim() || ''
       };
 
       console.log('Sending team data:', JSON.stringify(apiData, null, 2));
@@ -111,28 +113,11 @@ export const useTeamForm = (): UseTeamFormReturn => {
     });
   };
 
-  const handleAddTag = () => {
-    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData({
-        ...formData,
-        tags: [...formData.tags, newTag.trim()],
-      });
-      setNewTag('');
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
+  const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
-      tags: formData.tags.filter((tag) => tag !== tagToRemove),
+      [e.target.name]: e.target.value,
     });
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddTag();
-    }
   };
 
   const handleCancel = () => {
@@ -149,9 +134,7 @@ export const useTeamForm = (): UseTeamFormReturn => {
     isEditing,
     handleSubmit,
     handleChange,
-    handleAddTag,
-    handleRemoveTag,
-    handleKeyPress,
+    handleTextAreaChange,
     handleCancel,
   };
 };
