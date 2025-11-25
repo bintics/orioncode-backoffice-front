@@ -1,5 +1,7 @@
-import { Collaborator, ApiResponse, CreateCollaboratorRequest, UpdateCollaboratorRequest } from '../types';
+import { Collaborator, ApiResponse, CreateCollaboratorRequest, UpdateCollaboratorRequest, CollaboratorView } from '../types';
 import apiClient from './api';
+import { positionsService } from './positionsService';
+import { teamsService } from './teamsService';
 
 export const collaboratorsService = {
   getAll: async (
@@ -33,6 +35,27 @@ export const collaboratorsService = {
       console.error('Error fetching collaborators:', error);
       throw new Error('Failed to fetch collaborators');
     }
+  },
+
+  search: async (page: number = 1, pageSize: number = 10, search: string = '', filter: string = '') => {
+    var positions = await positionsService.getAllForDropdown();
+    var teams = await teamsService.getAllForDropdown();
+        
+    var apiResponse = await collaboratorsService.getAll(page, pageSize, search, filter);
+    var responseView: ApiResponse<CollaboratorView> = {
+      ...apiResponse,
+      data: apiResponse.data.map(collaborator => {
+        const position = positions.find(pos => pos.id === collaborator.positionId);
+        const team = teams.find(tm => tm.id === collaborator.teamId);
+  
+        return {
+          ...collaborator,
+          position: position!,
+          team: team!,
+        };
+      }),
+    };
+    return responseView;
   },
 
   getById: async (id: string): Promise<Collaborator> => {

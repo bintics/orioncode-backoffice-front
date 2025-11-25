@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { collaboratorsService } from '../../services/collaboratorsService';
-import { ApiResponse, Collaborator, CollaboratorView } from '../../types';
+import { CollaboratorView } from '../../types';
 import { useFilteredPaginatedData } from '../../hooks/useFilteredPaginatedData';
 import DataTable from '../../components/DataTable';
 import { SearchAndFilter } from '../../components/SearchAndFilter';
-import { positionsService } from '../../services/positionsService';
-import { teamsService } from '../../services/teamsService';
 
 const CollaboratorsList = () => {
   const { t } = useTranslation();
@@ -29,26 +27,7 @@ const CollaboratorsList = () => {
     goToPreviousPage, 
     changePageSize 
   } = useFilteredPaginatedData({
-    fetchFunction: async (page, pageSize, search, filter) => {
-      var positions = await positionsService.getAllForDropdown();
-      var teams = await teamsService.getAllForDropdown();
-      
-      var apiResponse = await collaboratorsService.getAll(page, pageSize, search, filter);
-      var responseView: ApiResponse<CollaboratorView> = {
-        ...apiResponse,
-        data: apiResponse.data.map(collaborator => {
-          const position = positions.find(pos => pos.id === collaborator.positionId);
-          const team = teams.find(tm => tm.id === collaborator.teamId);
-
-          return {
-            ...collaborator,
-            position: position,
-            team: team,
-          };
-        }),
-      };
-      return responseView;
-    },
+    fetchFunction: collaboratorsService.search,
   });
 
   const handleDelete = async (id: string) => {
