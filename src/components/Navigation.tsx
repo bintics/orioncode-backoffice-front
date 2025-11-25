@@ -22,7 +22,12 @@ const Navigation = () => {
       <div className="sidebar-header">
         <Link to="/" className="logo">
           <OrionCodeLogo size={32} showText={false} />
-          {!isCollapsed && <span style={{ marginLeft: '12px' }}>OrionCode</span>}
+          {!isCollapsed && 
+            <span style={{ marginLeft: '12px' }}>
+              OrionCode <br/> 
+              <small style={{fontSize: '0.75em', color: '#bbb'}}>Backoffice</small> 
+            </span>
+          }
         </Link>
         <button onClick={toggleSidebar} className="sidebar-toggle">
           {isCollapsed ? '→' : '←'}
