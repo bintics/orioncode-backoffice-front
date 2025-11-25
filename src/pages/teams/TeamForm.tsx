@@ -6,8 +6,6 @@ const TeamForm = () => {
   
   const {
     formData,
-    newTag,
-    setNewTag,
     loading,
     error,
     isEditing,

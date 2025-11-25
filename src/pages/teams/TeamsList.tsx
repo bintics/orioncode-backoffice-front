@@ -2,9 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { teamsService } from '../../services/teamsService';
 import { Team } from '../../types';
-import { useFilteredPaginatedData } from '../../hooks/useFilteredPaginatedData';
-import DataTable from '../../components/DataTable';
-import { SearchAndFilter } from '../../components/SearchAndFilter';
+import { useFilteredPaginatedData, DataTable, SearchAndFilter } from '@orioncode/design-system';
 
 const TeamsList = () => {
   const { t } = useTranslation();
