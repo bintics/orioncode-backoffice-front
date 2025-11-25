@@ -56,8 +56,7 @@ export interface Team {
 export interface CreateTeamRequest {
   id: string;
   name: string;
-  description?: string;
-  tags: string[];
+  description: string;
 }
 
 // Tipo específico para actualizar equipos

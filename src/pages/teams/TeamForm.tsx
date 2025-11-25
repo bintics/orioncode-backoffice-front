@@ -13,9 +13,7 @@ const TeamForm = () => {
     isEditing,
     handleSubmit,
     handleChange,
-    handleAddTag,
-    handleRemoveTag,
-    handleKeyPress,
+    handleTextAreaChange,
     handleCancel,
   } = useTeamForm();
 
@@ -70,63 +68,20 @@ const TeamForm = () => {
             </div>
           </div>
 
-          {/* Tags */}
-          <div>
-            <h3 style={{
-              marginBottom: '1rem', 
-              color: 'var(--accent-purple)',
-              fontSize: '1.1rem',
-              fontWeight: '600'
-            }}>
-              {t('tags')}
-            </h3>
-
-            <div className="form-group">
-              <label htmlFor="newTag" className="form-label">
-                {t('addTag', 'Add Tag')}
-              </label>
-              <div style={{display: 'flex', gap: '0.5rem'}}>
-                <input
-                  type="text"
-                  id="newTag"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="form-input"
-                  placeholder={t('enterTag', 'Ingrese una etiqueta')}
-                  style={{flex: 1}}
-                  disabled={loading}
-                />
-                <button
-                  type="button"
-                  onClick={handleAddTag}
-                  className="btn-secondary"
-                  disabled={loading || !newTag.trim()}
-                >
-                  {t('add', 'Agregar')}
-                </button>
-              </div>
-            </div>
-
-            {formData?.tags?.length > 0 && (
-              <div style={{marginTop: '1rem'}}>
-                <div className="tags">
-                  {formData.tags.map((tag, index) => (
-                    <span key={index} className="tag">
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveTag(tag)}
-                        className="remove-filter"
-                        disabled={loading}
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
+          <div className="form-group">
+            <label htmlFor="description" className="form-label">
+              {t('description')}
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description || ''}
+              onChange={handleTextAreaChange}
+              className="form-textarea"
+              placeholder={t('enterDescription', 'Ingrese una descripción (opcional)')}
+              rows={4}
+              disabled={loading}
+            />
           </div>
 
           <div className="form-actions">
