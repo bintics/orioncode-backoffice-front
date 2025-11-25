@@ -26,9 +26,6 @@ interface UseTeamFormReturn {
   // Handlers
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleAddTag: () => void;
-  handleRemoveTag: (tagToRemove: string) => void;
-  handleKeyPress: (e: React.KeyboardEvent) => void;
   handleTextAreaChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleCancel: () => void;
 }
