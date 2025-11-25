@@ -67,16 +67,25 @@ export interface UpdateTeamRequest {
   tags?: string[];
 }
 
+// CollaboratorView (Colaborador con referencias expandidas)
+export interface CollaboratorView {
+  id: string;
+  firstName: string;
+  lastName: string;
+  position: Position;
+  team: Team;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Collaborator (Colaborador) - Nueva estructura del backend
 export interface Collaborator {
   id: string;
   firstName: string;
   lastName: string;
-  position: string;
-  team: {
-    id: string;
-    name: string;
-  };
+  positionId: string;
+  teamId: string;
   tags: string[];
   createdAt: string;
   updatedAt: string;

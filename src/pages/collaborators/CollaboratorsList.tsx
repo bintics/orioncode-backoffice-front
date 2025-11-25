@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { collaboratorsService } from '../../services/collaboratorsService';
-import { Collaborator } from '../../types';
+import { CollaboratorView } from '../../types';
 import { useFilteredPaginatedData } from '../../hooks/useFilteredPaginatedData';
 import DataTable from '../../components/DataTable';
 import { SearchAndFilter } from '../../components/SearchAndFilter';
@@ -27,7 +27,7 @@ const CollaboratorsList = () => {
     goToPreviousPage, 
     changePageSize 
   } = useFilteredPaginatedData({
-    fetchFunction: collaboratorsService.getAll,
+    fetchFunction: collaboratorsService.search,
   });
 
   const handleDelete = async (id: string) => {
@@ -47,7 +47,7 @@ const CollaboratorsList = () => {
     {
       key: 'id',
       header: t('collaboratorId'),
-      render: (collaborator: Collaborator) => (
+      render: (collaborator: CollaboratorView) => (
         <span className="id-cell" title={collaborator?.id}>
           {collaborator?.id}
         </span>
@@ -57,29 +57,29 @@ const CollaboratorsList = () => {
     {
       key: 'firstName',
       header: t('firstName'),
-      render: (collaborator: Collaborator) => collaborator?.firstName || '',
+      render: (collaborator: CollaboratorView) => collaborator?.firstName || '',
     },
     {
       key: 'lastName',
       header: t('lastName'),
-      render: (collaborator: Collaborator) => collaborator?.lastName || '',
+      render: (collaborator:  CollaboratorView) => collaborator?.lastName || '',
     },
     {
       key: 'position',
       header: t('position'),
-      render: (collaborator: Collaborator) => collaborator?.position || '',
+      render: (collaborator: CollaboratorView) => collaborator?.position?.name || '',
       width: '150px',
     },
     {
       key: 'team',
       header: t('team'),
-      render: (collaborator: Collaborator) => collaborator?.team?.name || '',
+      render: (collaborator: CollaboratorView) => collaborator?.team?.name || '',
       width: '150px',
     },
     {
       key: 'tags',
       header: t('tags'),
-      render: (collaborator: Collaborator) => (
+      render: (collaborator: CollaboratorView) => (
         <div className="tags">
           {Array.isArray(collaborator?.tags) && collaborator.tags.map((tag, index) => (
             <span key={index} className="tag">
@@ -93,7 +93,7 @@ const CollaboratorsList = () => {
     {
       key: 'actions',
       header: t('actions'),
-      render: (collaborator: Collaborator) => (
+      render: (collaborator: CollaboratorView) => (
         <div className="btn-group">
           <Link to={`/collaborators/edit/${collaborator?.id}`} className="btn-secondary">
             {t('edit')}
