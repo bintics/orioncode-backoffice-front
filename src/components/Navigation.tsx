@@ -38,6 +38,16 @@ const Navigation = () => {
         <ul className="nav-menu">
           <li className="nav-item">
             <Link 
+              to="/home" 
+              className={`nav-link ${isActive('/home') ? 'active' : ''}`}
+              title={isCollapsed ? t('home') : ''}
+            >
+              <span className="nav-icon">🏠</span>
+              {!isCollapsed && t('home')}
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link 
               to="/positions" 
               className={`nav-link ${isActive('/positions') ? 'active' : ''}`}
               title={isCollapsed ? t('positions') : ''}

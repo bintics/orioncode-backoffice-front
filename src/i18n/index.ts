@@ -77,6 +77,32 @@ const resources = {
       noPositions: 'No positions found',
       noTeams: 'No teams found',
       noCollaborators: 'No collaborators found',
+      noProjects: 'No projects found',
+      
+      // Home page
+      home: 'Home',
+      myTeam: 'My Team',
+      teamMembers: 'Team Members',
+      member: 'Member',
+      teamProjects: 'Team Projects',
+      allProjects: 'All Projects',
+      showAllProjects: 'Show All Projects',
+      showTeamProjects: 'Show Team Projects Only',
+      projectName: 'Project Name',
+      projectDescription: 'Description',
+      projectStatus: 'Status',
+      projectType: 'Type',
+      owner: 'Owner',
+      
+      // Project statuses
+      ACTIVE: 'Active',
+      DRAFT: 'Draft',
+      ARCHIVED: 'Archived',
+      
+      // Project types
+      PRODUCT: 'Product',
+      TOOLING: 'Tooling',
+      SERVICE: 'Service',
     },
   },
   es: {
@@ -154,6 +180,32 @@ const resources = {
       noPositions: 'No se encontraron puestos',
       noTeams: 'No se encontraron equipos',
       noCollaborators: 'No se encontraron colaboradores',
+      noProjects: 'No se encontraron proyectos',
+      
+      // Home page
+      home: 'Inicio',
+      myTeam: 'Mi Equipo',
+      teamMembers: 'Miembros del Equipo',
+      member: 'Miembro',
+      teamProjects: 'Proyectos del Equipo',
+      allProjects: 'Todos los Proyectos',
+      showAllProjects: 'Mostrar Todos los Proyectos',
+      showTeamProjects: 'Mostrar Solo Proyectos del Equipo',
+      projectName: 'Nombre del Proyecto',
+      projectDescription: 'Descripción',
+      projectStatus: 'Estado',
+      projectType: 'Tipo',
+      owner: 'Propietario',
+      
+      // Project statuses
+      ACTIVE: 'Activo',
+      DRAFT: 'Borrador',
+      ARCHIVED: 'Archivado',
+      
+      // Project types
+      PRODUCT: 'Producto',
+      TOOLING: 'Herramienta',
+      SERVICE: 'Servicio',
     },
   },
 };

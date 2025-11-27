@@ -100,7 +100,7 @@ export interface CreateCollaboratorRequest {
   tags: string[];
 }
 
-// Tipo específico para actualizar colaboradores 
+// Tipo específico para actualizar colaboradores
 export interface UpdateCollaboratorRequest {
   firstName?: string;
   lastName?: string;
@@ -109,7 +109,20 @@ export interface UpdateCollaboratorRequest {
   tags?: string[];
 }
 
-// Tipos específicos para las respuestas de API
+// Project (Proyecto)
+export type ProjectStatus = 'ACTIVE' | 'DRAFT' | 'ARCHIVED';
+export type ProjectType = 'PRODUCT' | 'TOOLING' | 'SERVICE';
+
+export interface Project {
+  id: number;
+  name: string;
+  description?: string;
+  status: ProjectStatus;
+  type: ProjectType;
+  ownerId: string;
+  createdAt: string;
+  updatedAt: string;
+}// Tipos específicos para las respuestas de API
 export type PositionsResponse = ApiResponse<Position>;
 export type TeamsResponse = ApiResponse<Team>;
 export type CollaboratorsResponse = ApiResponse<Collaborator>;
