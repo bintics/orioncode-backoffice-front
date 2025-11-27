@@ -25,7 +25,7 @@ const Navigation = () => {
           {!isCollapsed && 
             <span style={{ marginLeft: '12px' }}>
               OrionCode <br/> 
-              <small style={{fontSize: '0.75em', color: '#bbb'}}>Backoffice</small> 
+              <small style={{fontSize: '0.75em', color: '#bbb'}}>Frontoffice</small> 
             </span>
           }
         </Link>
