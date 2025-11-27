@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { SidebarProvider, useSidebarContext } from './contexts/SidebarContext';
 import Navigation from './components/Navigation';
+import HomePage from './pages/home/HomePage';
 import PositionsList from './pages/positions/PositionsList';
 import PositionForm from './pages/positions/PositionForm';
 import CollaboratorsList from './pages/collaborators/CollaboratorsList';
@@ -18,7 +19,10 @@ const AppContent = () => {
         <Navigation />
         <main className={`main-content ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
           <Routes>
-            <Route path="/" element={<Navigate to="/positions" replace />} />
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            
+            {/* Home Route */}
+            <Route path="/home" element={<HomePage />} />
             
             {/* Positions Routes */}
             <Route path="/positions" element={<PositionsList />} />

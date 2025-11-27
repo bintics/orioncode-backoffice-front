@@ -25,7 +25,7 @@ const Navigation = () => {
           {!isCollapsed && 
             <span style={{ marginLeft: '12px' }}>
               OrionCode <br/> 
-              <small style={{fontSize: '0.75em', color: '#bbb'}}>Backoffice</small> 
+              <small style={{fontSize: '0.75em', color: '#bbb'}}>Frontoffice</small> 
             </span>
           }
         </Link>
@@ -36,6 +36,16 @@ const Navigation = () => {
       
       <nav>
         <ul className="nav-menu">
+          <li className="nav-item">
+            <Link 
+              to="/home" 
+              className={`nav-link ${isActive('/home') ? 'active' : ''}`}
+              title={isCollapsed ? t('home') : ''}
+            >
+              <span className="nav-icon">🏠</span>
+              {!isCollapsed && t('home')}
+            </Link>
+          </li>
           <li className="nav-item">
             <Link 
               to="/positions" 
