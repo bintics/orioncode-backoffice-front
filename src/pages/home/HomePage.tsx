@@ -140,90 +140,14 @@ const HomePage = () => {
   ];
 
   return (
-    <div className="page-container">
-      {/* Team Information Section */}
-      {team && (
-        <div style={{ marginBottom: '2rem' }}>
-          <div className="page-header">
-            <h1 className="page-title">{t('myTeam')}</h1>
-          </div>
-          
-          <div style={{
-            backgroundColor: 'var(--bg-secondary)',
-            padding: '1.5rem',
-            borderRadius: '0.5rem',
-            border: '1px solid var(--border-color)',
-          }}>
-            <h2 style={{
-              fontSize: '1.5rem',
-              fontWeight: '600',
-              color: 'var(--accent-purple)',
-              marginBottom: '0.5rem',
-            }}>
-              {team.name}
-            </h2>
-            {team.description && (
-              <p style={{
-                color: 'var(--text-secondary)',
-                fontSize: '0.95rem',
-              }}>
-                {team.description}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Team Members Section */}
-      {members && members.length > 0 && (
-        <div style={{ marginBottom: '2rem' }}>
-          <h2 style={{
-            fontSize: '1.25rem',
-            fontWeight: '600',
-            marginBottom: '1rem',
-            color: 'var(--text-primary)',
-          }}>
-            {t('teamMembers')}
-          </h2>
-          
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-            gap: '1rem',
-          }}>
-            {members.map((member) => (
-              <div
-                key={member.id}
-                style={{
-                  backgroundColor: 'var(--bg-secondary)',
-                  padding: '1rem',
-                  borderRadius: '0.5rem',
-                  border: '1px solid var(--border-color)',
-                }}
-              >
-                <div style={{
-                  fontWeight: '600',
-                  fontSize: '1rem',
-                  marginBottom: '0.25rem',
-                  color: 'var(--text-primary)',
-                }}>
-                  {member.firstName} {member.lastName}
-                </div>
-                <div style={{
-                  fontSize: '0.875rem',
-                  color: 'var(--accent-purple)',
-                }}>
-                  {positions[member.positionId]?.name || member.positionId}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Projects Section */}
+    <div className="page-container" style={{ paddingRight: '300px' }}>
+      {/* Projects Section - Main Content */}
       <div>
         <div className="page-header">
+          <h1 className="page-title">{t('home')}</h1>
+        </div>
+        
+        <div className="page-header" style={{ marginTop: '0' }}>
           <h2 style={{
             fontSize: '1.25rem',
             fontWeight: '600',
@@ -268,6 +192,99 @@ const HomePage = () => {
           onPageSizeChange={changePageSize}
         />
       </div>
+
+      {/* Team Information - Secondary Sidebar */}
+      {team && (
+        <div style={{
+          position: 'fixed',
+          right: '1rem',
+          top: '5rem',
+          width: '280px',
+          maxHeight: 'calc(100vh - 6rem)',
+          overflowY: 'auto',
+          backgroundColor: 'var(--bg-secondary)',
+          padding: '1rem',
+          borderRadius: '0.5rem',
+          border: '1px solid var(--border-color)',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        }}>
+          <h3 style={{
+            fontSize: '0.875rem',
+            fontWeight: '600',
+            color: 'var(--accent-purple)',
+            marginBottom: '0.5rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+          }}>
+            {t('myTeam')}
+          </h3>
+          
+          <div style={{ marginBottom: '1rem' }}>
+            <div style={{
+              fontSize: '1rem',
+              fontWeight: '600',
+              color: 'var(--text-primary)',
+              marginBottom: '0.25rem',
+            }}>
+              {team.name}
+            </div>
+            {team.description && (
+              <div style={{
+                color: 'var(--text-secondary)',
+                fontSize: '0.75rem',
+                lineHeight: '1.4',
+              }}>
+                {team.description}
+              </div>
+            )}
+          </div>
+
+          {/* Team Members - Compact List */}
+          {members && members.length > 0 && (
+            <>
+              <h4 style={{
+                fontSize: '0.75rem',
+                fontWeight: '600',
+                color: 'var(--text-secondary)',
+                marginBottom: '0.5rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}>
+                {t('teamMembers')} ({members.length})
+              </h4>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {members.map((member) => (
+                  <div
+                    key={member.id}
+                    style={{
+                      padding: '0.5rem',
+                      borderRadius: '0.25rem',
+                      border: '1px solid var(--border-color)',
+                      backgroundColor: 'var(--bg-primary)',
+                    }}
+                  >
+                    <div style={{
+                      fontWeight: '500',
+                      fontSize: '0.8rem',
+                      marginBottom: '0.125rem',
+                      color: 'var(--text-primary)',
+                    }}>
+                      {member.firstName} {member.lastName}
+                    </div>
+                    <div style={{
+                      fontSize: '0.7rem',
+                      color: 'var(--accent-purple)',
+                    }}>
+                      {positions[member.positionId]?.name || member.positionId}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };
